@@ -1,7 +1,24 @@
 # Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework
 
-**Author:** Hakim Guettal  
-**Version:** 1.0.0  
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24175268.svg)](https://doi.org/10.5281/zenodo.24175268)
+
+Author: Hakim Guettal  
+DOI: [10.5281/zenodo.24175268](https://doi.org/10.5281/zenodo.24175268)  
+Repository: [GuettHM/rnull-framework](https://github.com/GuettHM/rnull-framework/releases/tag/v1.0.1)
+
+## Citation
+
+```bibtex
+@software{guettal_2026_rnull,
+  author       = {Guettal, Hakim},
+  title        = {Causal Transparency Algebra (ℝ_∅) and ∅-Net Framework},
+  month        = nov,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v1.0.1},
+  doi          = {10.5281/zenodo.24175268},
+  url          = {https://doi.org/10.5281/zenodo.24175268}
+}
 **License:** MIT  
 
 ## Overview
