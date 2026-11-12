@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use Causal Transparency Algebra (R_null) or Null-Net in your research, please cite it as below."
+authors:
+  - family-names: "Guettal"
+    given-names: "Hakim"
+title: "Causal Transparency Algebra (R_null) and Null-Net Architecture"
+version: 1.0.0
+date-released: 2026-11-12
+license: MIT

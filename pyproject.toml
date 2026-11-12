@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rnull"
+version = "1.0.0"
+description = "Causal Transparency Algebra (R_null) and Null-Net Neural Architecture"
+readme = "README.md"
+authors = [{ name = "Hakim Guettal" }]
+license = { text = "MIT" }
+dependencies = ["numpy>=1.20.0"]

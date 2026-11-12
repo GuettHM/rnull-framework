@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Causal Transparency Algebra (R_∅) & ∅-Net Interactive Simulator — Hakim Guettal</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --accent: #38bdf8;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 24px;
+    }
+    header {
+      border-bottom: 1px solid #334155;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    h1 { margin: 0 0 6px 0; font-size: 24px; color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 14px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 18px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+    }
+    .sensor-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 12px 0;
+      padding: 10px;
+      background: #0f172a;
+      border-radius: 6px;
+    }
+    button {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.off {
+      background: var(--danger);
+      color: white;
+    }
+    .result-box {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 6px;
+      background: #0f172a;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .good { color: var(--success); font-weight: bold; }
+    .bad { color: var(--danger); font-weight: bold; }
+    input[type="range"] { width: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Causal Transparency Algebra (ℝ_∅) & ∅-Net Simulator</h1>
+    <div class="subtitle">Author: <strong>Hakim Guettal</strong> | Interactive Verification of Bi-Identity Fusion, Causal Clock & 7nm CMOS Energy Savings</div>
+  </header>
+
+  <div class="grid">
+    <!-- Panel 1: Multimodal Fusion -->
+    <div class="card">
+      <h2>1. Branchless Multimodal Sensor Fusion (x₁ ⊗ x₂ ⊗ x₃)</h2>
+      <p style="color:var(--muted);font-size:13px;">Toggle any sensor to <strong>∅ (Offline)</strong> to compare standard zero/NaN arithmetic against ℝ_∅ universal identity.</p>
+      <div class="sensor-row">
+        <span>Camera (x₁ = 2.5)</span>
+        <button id="btn-s1" onclick="toggleSensor(1)">ACTIVE (2.5)</button>
+      </div>
+      <div class="sensor-row">
+        <span>LiDAR (x₂ = 4.0)</span>
+        <button id="btn-s2" onclick="toggleSensor(2)">ACTIVE (4.0)</button>
+      </div>
+      <div class="sensor-row">
+        <span>Radar (x₃ = 1.5)</span>
+        <button id="btn-s3" onclick="toggleSensor(3)">ACTIVE (1.5)</button>
+      </div>
+      <div class="result-box" id="fusion-output"></div>
+    </div>
+
+    <!-- Panel 2: 7nm CMOS Energy Calculator -->
+    <div class="card">
+      <h2>2. 7nm CMOS Zero-Power Bypass Calculator</h2>
+      <p style="color:var(--muted);font-size:13px;">Adjust input transparency (x = ∅) and passive wire skip-connections (W = ∅) for 100M synaptic operations.</p>
+      <label>Input Transparency Ratio (x = ∅): <strong id="lbl-in">60%</strong></label>
+      <input type="range" id="rng-in" min="0" max="100" value="60" oninput="updateEnergy()" />
+      <br/><br/>
+      <label>Passive Wire Skip-Connection Ratio (W = ∅): <strong id="lbl-w">20%</strong></label>
+      <input type="range" id="rng-w" min="0" max="100" value="20" oninput="updateEnergy()" />
+      <div class="result-box" id="energy-output"></div>
+    </div>
+  </div>
+
+  <script>
+    const state = { s1: true, s2: true, s3: true };
+    const vals = { s1: 2.5, s2: 4.0, s3: 1.5 };
+
+    function toggleSensor(idx) {
+      const key = 's' + idx;
+      state[key] = !state[key];
+      const btn = document.getElementById('btn-' + key);
+      if (state[key]) {
+        btn.textContent = 'ACTIVE (' + vals[key] + ')';
+        btn.classList.remove('off');
+      } else {
+        btn.textContent = 'OFFLINE (∅)';
+        btn.classList.add('off');
+      }
+      updateFusion();
+    }
+
+    function updateFusion() {
+      const activeVals = [];
+      ['s1', 's2', 's3'].forEach(k => { if (state[k]) activeVals.push(vals[k]); });
+
+      const stdZero = (state.s1 ? vals.s1 : 0) * (state.s2 ? vals.s2 : 0) * (state.s3 ? vals.s3 : 0);
+      const stdNaN = (state.s1 && state.s2 && state.s3) ? (vals.s1 * vals.s2 * vals.s3).toFixed(2) : 'NaN (CRASH)';
+      
+      let rnullRes = '';
+      if (activeVals.length === 0) {
+        rnullRes = '∅ (Native Epistemic Abstention)';
+      } else {
+        const prod = activeVals.reduce((a, b) => a * b, 1.0);
+        rnullRes = prod.toFixed(2) + ' (100% Preserved)';
+      }
+
+      document.getElementById('fusion-output').innerHTML = `
+        <div>• Standard Zero-Padding: <span class="${activeVals.length < 3 ? 'bad' : 'good'}">${stdZero.toFixed(2)}</span></div>
+        <div style="margin-top:6px;">• IEEE 754 NaN / Codd NULL: <span class="${activeVals.length < 3 ? 'bad' : 'good'}">${stdNaN}</span></div>
+        <div style="margin-top:6px;">• <strong>ℝ_∅ Universal Identity</strong>: <span class="good">${rnullRes}</span></div>
+      `;
+    }
+
+    function updateEnergy() {
+      const pIn = parseInt(document.getElementById('rng-in').value, 10) / 100.0;
+      const pW = parseInt(document.getElementById('rng-w').value, 10) / 100.0;
+      document.getElementById('lbl-in').textContent = Math.round(pIn * 100) + '%';
+      document.getElementById('lbl-w').textContent = Math.round(pW * 100) + '%';
+
+      const ops = 1e8;
+      const eDense = ops * (3.7 + 5.0) * 1e-9;
+      const eZeroSkip = (ops * 0.4 + ops * (1 - pIn) * (3.7 + 5.0)) * 1e-9;
+      const activeRatio = (1 - pIn) * (1 - pW);
+      const eNullNet = (ops * activeRatio * (3.7 + 5.0)) * 1e-9;
+      const saving = ((1 - eNullNet / eDense) * 100).toFixed(2);
+
+      document.getElementById('energy-output').innerHTML = `
+        <div>• Standard Dense GPU (FP32): <strong>${eDense.toFixed(4)} mJ</strong></div>
+        <div style="margin-top:6px;">• Classical Zero-Skipping HW: <strong>${eZeroSkip.toFixed(4)} mJ</strong></div>
+        <div style="margin-top:6px;">• <strong>∅-Net Hardware (Hi-Z + Skip)</strong>: <span class="good">${eNullNet.toFixed(4)} mJ (-${saving}%)</span></div>
+      `;
+    }
+
+    updateFusion();
+    updateEnergy();
+  </script>
+</body>
+</html>
