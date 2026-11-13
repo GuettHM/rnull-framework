@@ -41,20 +41,21 @@
 
 ### 🧭 Table of Contents
 
-1. [Visual System Architecture & Co-Design Stack](#1-visual-system-architecture--co-design-stack)
-2. [30-Second Quick-Start (PyTorch API)](#2-30-second-quick-start-pytorch-api)
-3. [Formal Mathematical Theory (ℝ<sub>∅</sub>)](#3-formal-mathematical-theory-mathbbremptyset)
-4. [Structural Comparison Matrix](#4-structural-comparison-matrix)
-5. [Software Engineering: Dual-Tensor PyTorch Engine (`rnull/`)](#5-software-engineering-dual-tensor-pytorch-engine-rnull)
-6. [Hardware Engineering: Synthesizable Verilog RTL MAC (`hardware/`)](#6-hardware-engineering-synthesizable-verilog-rtl-mac-hardware)
-7. [Empirical Benchmarks & Automated Verification (`benchmarks/` & `tests/`)](#7-empirical-benchmarks--automated-verification-benchmarks--tests)
-8. [Interactive Web Verification Lab (`dashboard/`)](#8-interactive-web-verification-lab-dashboard)
-9. [Repository Structure & Installation](#9-repository-structure--installation)
-10. [Citation & Academic Reference](#10-citation--academic-reference)
-11. [License](#11-license)
+1. [Visual System Architecture & Co-Design Stack](#sec-1)
+2. [30-Second Quick-Start (PyTorch API)](#sec-2)
+3. [Formal Mathematical Theory (ℝ<sub>∅</sub>)](#sec-3)
+4. [Structural Comparison Matrix](#sec-4)
+5. [Software Engineering: Dual-Tensor PyTorch Engine (`rnull/`)](#sec-5)
+6. [Hardware Engineering: Synthesizable Verilog RTL MAC (`hardware/`)](#sec-6)
+7. [Empirical Benchmarks & Automated Verification (`benchmarks/` & `tests/`)](#sec-7)
+8. [Interactive Web Verification Lab (`dashboard/`)](#sec-8)
+9. [Repository Structure & Installation](#sec-9)
+10. [Citation & Academic Reference](#sec-10)
+11. [License](#sec-11)
 
 ---
 
+<a id="sec-1"></a>
 ## 1. Visual System Architecture & Co-Design Stack
 
 The $\emptyset$-Net architecture bridges abstract non-distributive algebra with commodity GPU execution and custom ASIC/FPGA hardware synthesis across three bit-exact layers:
@@ -110,6 +111,7 @@ Input Stream:   [  x_1 = 2.0  ,   x_2 = ∅ (Sensor Offline)   ,   x_3 = 5.0  ]
 
 ---
 
+<a id="sec-2"></a>
 ## 2. 30-Second Quick-Start (PyTorch API)
 
 ```python
@@ -134,6 +136,7 @@ output = layer(RNullTensor.null_like(torch.zeros(1, 4)))   # output.m == True (E
 
 ---
 
+<a id="sec-3"></a>
 ## 3. Formal Mathematical Theory ($\mathbb{R}_\emptyset$)
 
 Let $\mathbb{R}_\emptyset = \mathbb{R} \cup \lbrace \emptyset \rbrace$ be the extended set of real numbers equipped with the formal epistemic abstention element $\emptyset \notin \mathbb{R}$.
@@ -230,6 +233,7 @@ $$W_{ij} \odot x_j = \begin{cases} W_{ij} \cdot x_j & \text{if } W_{ij}, x_j \in
 
 ---
 
+<a id="sec-4"></a>
 ## 4. Structural Comparison Matrix
 
 | Technical Property | Classical Real Arithmetic ($\mathbb{R}$) | IEEE-754 `NaN` / SQL `NULL` | Causal Transparency ($\mathbb{R}_\emptyset$) |
@@ -244,11 +248,12 @@ $$W_{ij} \odot x_j = \begin{cases} W_{ij} \cdot x_j & \text{if } W_{ij}, x_j \in
 
 ---
 
+<a id="sec-5"></a>
 ## 5. Software Engineering: Dual-Tensor PyTorch Engine (`rnull/`)
 
 Commodity CPUs and GPUs execute dense IEEE-754 pipelines and lack physical high-impedance (`Hi-Z`) lines. To deploy $\mathbb{R}_\emptyset$ on existing CUDA/SIMD accelerators without hardware modifications, `rnull/core.py` implements a **Vectorized Dual-Tensor Architecture** pairing:
 * `self.v` (`torch.float32`): The dense numerical payload tensor.
-* `self.m` (`torch.bool`): The causal abstention bitmask (`True` ⇔ $x = \emptyset$, isomorphic to $\chi_\emptyset(x)$).
+* `self.m` (`torch.bool`): The causal abstention bitmask (`True` ⇔ $x = \emptyset$, corresponding to the algebraic detector $\chi_\emptyset(x)$ across all tensor elements).
 
 ### Complete API Reference (`rnull/core.py`)
 
@@ -265,6 +270,7 @@ Commodity CPUs and GPUs execute dense IEEE-754 pipelines and lack physical high-
 
 ---
 
+<a id="sec-6"></a>
 ## 6. Hardware Engineering: Synthesizable Verilog RTL MAC (`hardware/`)
 
 The `/hardware/rnull_mac.v` module translates $\mathbb{R}_\emptyset$ into synthesizable Register-Transfer Level (RTL) hardware, achieving physical dynamic power savings on sparse or abstaining workloads:
@@ -326,6 +332,7 @@ endmodule
 
 ---
 
+<a id="sec-7"></a>
 ## 7. Empirical Benchmarks & Automated Verification (`benchmarks/` & `tests/`)
 
 ### 7.1 1,000,000-Synapse ($1000 \times 1000$) Sparsity & Continual Learning Benchmark
@@ -344,10 +351,11 @@ Running `python benchmarks/run_benchmarks.py` evaluates a $1000 \times 1000$ syn
 
 ---
 
+<a id="sec-8"></a>
 ## 8. Interactive Web Verification Lab (`dashboard/`)
 
 This repository ships with a standalone, zero-dependency interactive web simulator located at [`dashboard/index.html`](./dashboard/index.html). Open it locally in any browser (or via GitHub Pages) to test:
-1. **Live $\mathbb{R}_\emptyset$ Operator & $\chi_\emptyset(x)$ Polynomial Evaluator** with real-time Operational Cayley Tables.
+1. **Live ℝ<sub>∅</sub> Operator & χ<sub>∅</sub>(x) Polynomial Evaluator** with real-time Operational Cayley Tables.
 2. **Autonomous Sensor Fusion Simulator** (Camera + LiDAR + Radar dropout & OOD blackout stress testing).
 3. **Continual Learning Drift Comparator** ($\mathbb{R}_\emptyset$ Zero-Drift vs. AdamW Weight Decay degradation).
 4. **Verilog RTL MAC Cycle & Power-Gating Simulator** (1,000-synapse hardware energy analyzer).
@@ -355,6 +363,7 @@ This repository ships with a standalone, zero-dependency interactive web simulat
 
 ---
 
+<a id="sec-9"></a>
 ## 9. Repository Structure & Installation
 
 ### 9.1 Directory Layout
@@ -399,6 +408,7 @@ python benchmarks/run_benchmarks.py
 
 ---
 
+<a id="sec-10"></a>
 ## 10. Citation & Academic Reference
 
 If you use the **Causal Transparency Algebra ($\mathbb{R}_\emptyset$)** or the **$\emptyset$-Net Framework** in your research, please cite the official CERN/Zenodo archive:
@@ -418,6 +428,7 @@ If you use the **Causal Transparency Algebra ($\mathbb{R}_\emptyset$)** or the *
 
 ---
 
+<a id="sec-11"></a>
 ## 11. License
 
 This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
