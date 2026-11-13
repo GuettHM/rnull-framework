@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rnull-framework"
 version = "1.0.1"
-description = "Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework: non-distributive bi-identity tensor engine, drift-free continual learning, and Verilog RTL neuromorphic MAC."
+description = "Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework: Dual-Tensor PyTorch emulator, drift-free continual learning, multimodal fusion, and Verilog RTL neuromorphic MAC."
 readme = "README.md"
 authors = [
     { name = "Hakim Guettal" }
@@ -33,7 +33,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics"
 ]
 dependencies = [
-    "numpy>=1.22.0"
+    "numpy>=1.22.0",
+    "torch>=2.0.0"
 ]
 
 [project.optional-dependencies]

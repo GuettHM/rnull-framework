@@ -19,4 +19,4 @@ keywords:
   - epistemic-abstention
   - verilog-rtl
   - zero-power-mac
-abstract: "Official implementation of Causal Transparency Algebra (ℝ_∅) and the ∅-Net architecture: a non-distributive bi-identity algebraic framework enabling zero-power neuromorphic hardware bypasses, drift-free continual learning, and native epistemic abstention."
+abstract: "Official implementation of Causal Transparency Algebra (ℝ_∅) and the ∅-Net architecture: a non-distributive bi-identity algebraic framework enabling zero-power neuromorphic hardware bypasses, drift-free continual learning, fault-tolerant multimodal fusion, and native epistemic abstention."
