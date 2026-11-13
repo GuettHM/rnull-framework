@@ -1,9 +1,22 @@
 cff-version: 1.2.0
-message: "If you use Causal Transparency Algebra (R_null) or Null-Net in your research, please cite it as below."
+title: "Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework"
+message: "If you use this software or algebraic framework in your research, please cite it using the metadata below."
+type: software
 authors:
   - family-names: "Guettal"
     given-names: "Hakim"
-title: "Causal Transparency Algebra (R_null) and Null-Net Architecture"
-version: 1.0.0
-date-released: 2026-11-12
+repository-code: "https://github.com/GuettHM/rnull-framework"
+url: "https://doi.org/10.5281/zenodo.24175268"
+doi: 10.5281/zenodo.24175268
+version: 1.0.1
+date-released: "2026-11-13"
 license: MIT
+keywords:
+  - causal-transparency-algebra
+  - null-net
+  - neuromorphic-computing
+  - continual-learning
+  - epistemic-abstention
+  - verilog-rtl
+  - zero-power-mac
+abstract: "Official implementation of Causal Transparency Algebra (ℝ_∅) and the ∅-Net architecture: a non-distributive bi-identity algebraic framework enabling zero-power neuromorphic hardware bypasses, drift-free continual learning, and native epistemic abstention."
