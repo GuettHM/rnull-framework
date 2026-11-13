@@ -253,7 +253,7 @@ $$W_{ij} \odot x_j = \begin{cases} W_{ij} \cdot x_j & \text{if } W_{ij}, x_j \in
 
 Commodity CPUs and GPUs execute dense IEEE-754 pipelines and lack physical high-impedance (`Hi-Z`) lines. To deploy $\mathbb{R}_\emptyset$ on existing CUDA/SIMD accelerators without hardware modifications, `rnull/core.py` implements a **Vectorized Dual-Tensor Architecture** pairing:
 * `self.v` (`torch.float32`): The dense numerical payload tensor.
-* `self.m` (`torch.bool`): The causal abstention bitmask (`True` ⇔ $x = \emptyset$, corresponding to the algebraic detector $\chi_\emptyset(x)$ across all tensor elements).
+* `self.m` (`torch.bool`): The causal abstention bitmask (`True` $\Leftrightarrow x = \emptyset$), isomorphic to $\chi_\emptyset(x)$. across all tensor elements).
 
 ### Complete API Reference (`rnull/core.py`)
 
