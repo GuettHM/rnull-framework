@@ -1,7 +1,7 @@
 # When a newer release is archived on Zenodo, update `version`,
 # `date-released` and `doi` together.
 cff-version: 1.2.0
-title: "Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework"
+title: "rnull-framework: Causal Transparency Algebra (ℝ∅), real arithmetic with a null identity element"
 message: "If you use this software, please cite it using the metadata below."
 type: software
 authors:
@@ -20,4 +20,14 @@ keywords:
   - sparse-neural-networks
   - continual-learning
   - verilog
-abstract: "Real arithmetic extended with a null element that is the identity of both addition and multiplication: a NumPy reference implementation, PyTorch layers that skip missing inputs and abstain when all inputs are missing, exact freezing of parameter entries, and a Verilog multiply-accumulate cell with null tags."
+abstract: |
+  rnull-framework implements Causal Transparency Algebra (ℝ∅): the real numbers extended with one element, ∅ ("no value was supplied"), which is distinct from a measured zero and acts as the identity of both addition and multiplication.
+
+  This release contains:
+  - a NumPy reference implementation of the algebra, linear layers and optimisers;
+  - an equivalent, optional PyTorch implementation, with layers that skip missing inputs, report their coverage and abstain when all inputs are missing;
+  - exact freezing of selected parameter entries;
+  - a Verilog multiply-accumulate cell with a 1-bit null tag per operand, self-checking testbenches and a bit-accurate Python model;
+  - reproducible benchmarks with stored results, and a technical note with definitions and proofs.
+
+  Status: research prototype. In the included experiments the null-aware layers show no accuracy advantage over imputation, and the hardware cell has not been synthesised. See CHANGELOG.md for the claims of v1.0.1 that later versions correct or withdraw.
