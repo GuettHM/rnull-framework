@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+Changes on `main` after the 1.1.0 tag. The library code, tests, benchmarks and
+hardware are unchanged.
+
+### Changed
+
+* **Dashboard rewritten** as a self-contained page: no external stylesheets or
+  fonts, so it works offline. It now covers all six operators (including ⊖ and
+  ⊘), the distributivity defect, the linear layer with coverage and the three
+  `normalize` modes, and a bit-accurate integer model of the MAC cell with
+  guard bits and the overflow flag. A new section shows the stored benchmark
+  results, read from `benchmarks/results/`.
+* **Citation metadata** points to the 1.1.0 Zenodo record
+  (DOI 10.5281/zenodo.24215450) in `CITATION.cff`, the README badge and BibTeX
+  entry, `pyproject.toml` and the dashboard.
+* **Project title** is now "rnull-framework: Causal Transparency Algebra (ℝ∅),
+  real arithmetic with a null identity element" in `CITATION.cff`, the README
+  BibTeX entry and the dashboard, matching the Zenodo record. The name
+  "∅-Net" is no longer used.
+
 ## 1.1.0 — 2026-11-14
 
 Archived release (DOI 10.5281/zenodo.24215450).
@@ -85,7 +106,7 @@ results. It contains breaking API changes (listed below).
 | "Zero-power bypass", "% power saved" | No synthesis or power data exist. The figures are skipped-cycle (activity) ratios. |
 | "Bit-exact equivalence" between software and RTL | Software is floating point, RTL is fixed point. A bit-accurate Python model of the RTL is now provided and tested. |
 | "Exact polynomial detector χ∅" | Equal to the mask for finite values; NaN for ±inf. The mask is the detector. |
-| "Zero-dependency" dashboard, "runs pytest" | The page loads CSS and fonts from CDNs and runs JavaScript checks of its own operator port. Labels corrected. |
+| "Zero-dependency" dashboard, "runs pytest" | In 1.1.0 the page loaded CSS and fonts from CDNs and ran JavaScript checks of its own operator port; labels corrected. It has since been rewritten without external dependencies (see Unreleased). |
 
 ### Removed
 
