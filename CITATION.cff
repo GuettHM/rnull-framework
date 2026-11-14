@@ -1,6 +1,8 @@
+# The DOI below identifies the archived release v1.0.1. When a newer release
+# is archived on Zenodo, update `version`, `date-released` and `doi` together.
 cff-version: 1.2.0
 title: "Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework"
-message: "If you use this software or algebraic framework in your research, please cite it using the metadata below."
+message: "If you use this software, please cite it using the metadata below."
 type: software
 authors:
   - family-names: "Guettal"
@@ -12,11 +14,10 @@ version: 1.0.1
 date-released: "2026-11-13"
 license: MIT
 keywords:
-  - causal-transparency-algebra
-  - null-net
-  - neuromorphic-computing
+  - missing-data
+  - masked-arrays
+  - sensor-fusion
+  - sparse-neural-networks
   - continual-learning
-  - epistemic-abstention
-  - verilog-rtl
-  - zero-power-mac
-abstract: "Official implementation of Causal Transparency Algebra (ℝ_∅) and the ∅-Net architecture: a non-distributive bi-identity algebraic framework enabling zero-power neuromorphic hardware bypasses, drift-free continual learning, fault-tolerant multimodal fusion, and native epistemic abstention."
+  - verilog
+abstract: "Real arithmetic extended with a null element that is the identity of both addition and multiplication: a NumPy reference implementation, PyTorch layers that skip missing inputs and abstain when all inputs are missing, exact freezing of parameter entries, and a Verilog multiply-accumulate cell with null tags."

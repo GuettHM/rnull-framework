@@ -1,0 +1,395 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+
+\hypersetup{pdftitle={Causal Transparency Algebra: definitions, structure and limits},pdfauthor={Hakim Guettal}}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}[proposition]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[proposition]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[proposition]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rn}{\R_{\varnothing}}
+\newcommand{\nul}{\varnothing}
+\newcommand{\op}{\oplus}
+\newcommand{\ot}{\otimes}
+\newcommand{\od}{\odot}
+\newcommand{\sk}{\rhd}
+
+\title{Causal Transparency Algebra $\Rn$:\\ definitions, structure and limits}
+\author{Hakim Guettal}
+\date{Technical note for \texttt{rnull-framework} v1.1.0 \\ November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+$\Rn=\R\sqcup\{\nul\}$ extends the real numbers by one element $\nul$, read as
+``no value was supplied'', which is declared to be the identity of both an
+extended addition $\op$ and an extended multiplication $\ot$. This note states
+precisely what structure results, proves the properties the software relies
+on, and separates them from claims the construction does not support. In
+short: $(\Rn,\op)$ and $(\Rn,\ot)$ are commutative monoids obtained by adjoining
+an identity; together they are not a semiring, and the failure of
+distributivity is characterised exactly. With the absorbing product $\od$
+instead, $(\Rn,\op,\od)$ \emph{is} a commutative semiring, and a linear layer
+that skips missing inputs is the matrix product over it. Numerically, that
+layer coincides with zero imputation plus an ``everything was missing'' flag.
+Measured results are reported in Section~\ref{sec:evidence}; they show no
+accuracy advantage over imputation on the problems tested.
+\end{abstract}
+
+\section{Definitions}
+
+\begin{definition}
+Let $\nul\notin\R$ and $\Rn=\R\sqcup\{\nul\}$. For $a,b\in\Rn$,
+\[
+a\op b=\begin{cases} a+b & a,b\in\R\\ a & b=\nul\\ b & a=\nul \end{cases}
+\qquad
+a\ot b=\begin{cases} a\,b & a,b\in\R\\ a & b=\nul\\ b & a=\nul \end{cases}
+\]
+(so $\nul\op\nul=\nul\ot\nul=\nul$). Negation is $-\nul=\nul$ and
+$a\ominus b=a\op(-b)$. Two further products are used for the coupling of a
+weight $w$ with an input $x$:
+\[
+w\od x=\begin{cases} w\,x & w,x\in\R\\ \nul & \text{otherwise} \end{cases}
+\qquad
+w\sk x=\begin{cases} w\ot x & x\in\R\\ \nul & x=\nul \end{cases}
+\]
+and division is $a\oslash b=a/b$ for $a,b\in\R$, $b\neq 0$, and $\nul$ if
+either operand is $\nul$. The \emph{tag} of $a$ is $\nu(a)=1$ if $a=\nul$ and
+$0$ otherwise.
+\end{definition}
+
+Division of a real number by $0$ is left undefined by the algebra; the
+software follows IEEE~754 there.
+
+\section{Structure}
+
+\begin{proposition}\label{prop:monoids}
+$(\Rn,\op)$ and $(\Rn,\ot)$ are commutative monoids with the same identity
+$\nul$.
+\end{proposition}
+\begin{proof}
+Let $B=(\{0,1\},\wedge)$. The maps
+$\varphi_+:\Rn\to(\R,+)\times B$, $x\mapsto(x,0)$, $\nul\mapsto(0,1)$, and
+$\varphi_\times:\Rn\to(\R,\cdot)\times B$, $x\mapsto(x,0)$, $\nul\mapsto(1,1)$,
+are injective, and a case check shows
+$\varphi_+(a\op b)=\varphi_+(a)\varphi_+(b)$ and
+$\varphi_\times(a\ot b)=\varphi_\times(a)\varphi_\times(b)$. Their images are
+closed and contain the identities $(0,1)$ and $(1,1)$, so $\op$ and $\ot$
+inherit associativity and commutativity from the product monoids.
+\end{proof}
+
+\begin{remark}
+This is the standard construction that adjoins an identity to a semigroup
+(written $S^1$ in semigroup theory, the \texttt{Option}/\texttt{Maybe} monoid
+in programming). The embeddings $\varphi_+,\varphi_\times$ are exactly the
+(value, mask) representation used by the code; they need different payloads
+for $\nul$ ($0$ and $1$), which is why no single embedding into a product
+\emph{ring} exists.
+\end{remark}
+
+\begin{proposition}[What changes relative to $\R$]\label{prop:loss}
+\begin{enumerate}
+\item $0$ is no longer the additive identity of the whole set, but
+      $0\op x=x$ for $x\in\R$ and $0\op\nul=0$.
+\item $a\op b=\nul$ only if $a=b=\nul$. Hence no real number has an additive
+      inverse, $(\Rn,\op)$ is not a group, and $x\ominus x=0\neq\nul$.
+\item $0\ot a=0$ for every $a\in\Rn$: zero still annihilates. In particular a
+      measured zero in a product is not ``skipped''.
+\item The only invertible element of $(\Rn,\ot)$ is $\nul$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proposition}[Distributivity defect]\label{prop:defect}
+For $a\in\R$ and $b,c\in\Rn$,
+\[
+\bigl((a\ot b)\op(a\ot c)\bigr)\ominus\bigl(a\ot(b\op c)\bigr)
+ = a\cdot\max\{\nu(b),\nu(c)\}.
+\]
+Consequently $a\ot(b\op c)=(a\ot b)\op(a\ot c)$ holds if and only if
+$a=\nul$, or $a=0$, or $b,c\in\R$.
+\end{proposition}
+\begin{proof}
+If $b,c\in\R$ this is distributivity in $\R$. If $b\in\R$, $c=\nul$: the left
+term is $ab+a$ and the right term is $ab$. If $b=c=\nul$: the left term is
+$a+a$ and the right term is $a\ot\nul=a$. For $a=\nul$ both sides equal
+$b\op c$.
+\end{proof}
+
+\begin{corollary}\label{cor:chi}
+$(\Rn,\op,\ot)$ is not a semiring. The function
+$\chi(x)=\bigl((1\ot 0)\op(1\ot x)\bigr)\ominus\bigl(1\ot(0\op x)\bigr)$
+equals $\nu(x)$.
+\end{corollary}
+
+\begin{remark}\label{rem:chi}
+$\chi$ is a consequence of the case distinctions already built into $\op$ and
+$\ot$; it does not detect $\nul$ independently of them. In the (value, mask)
+representation it is the mask. In floating point the identity holds for
+finite $x$ only: for $x=\pm\infty$ the expression is $\infty-\infty=$ NaN.
+The software therefore reads the mask and keeps the polynomial as a test.
+\end{remark}
+
+\begin{proposition}[Tag homomorphisms]\label{prop:tags}
+$\nu(a\op b)=\nu(a\ot b)=\nu(a)\wedge\nu(b)$,\quad
+$\nu(a\od b)=\nu(a\oslash b)=\nu(a)\vee\nu(b)$,\quad
+$\nu(w\sk x)=\nu(x)$.
+\end{proposition}
+
+\begin{proposition}[The semiring of the linear layer]\label{prop:semiring}
+$(\Rn,\op,\od)$ is a commutative semiring with zero $\nul$ and unit $1$, without
+zero divisors.
+\end{proposition}
+\begin{proof}
+$(\Rn,\od)$ is the monoid $(\R,\cdot)$ with an absorbing element adjoined, so it
+is a commutative monoid with identity $1$ and $\nul\od a=\nul$. For
+distributivity, $w\od(x\op y)=(w\od x)\op(w\od y)$: if $w=\nul$ both sides are
+$\nul$; if $w\in\R$ and exactly one of $x,y$ is $\nul$, say $y$, both sides are
+$wx$; if both are $\nul$ both sides are $\nul$; otherwise it is distributivity
+in $\R$. Finally $a\od b=\nul$ forces $a=\nul$ or $b=\nul$.
+\end{proof}
+
+\begin{remark}
+This is the semiring obtained from $(\R,+,\cdot)$ by adjoining a new zero. Sums
+and matrix products over it are well defined and associative, so
+$y_i=\bigoplus_j W_{ij}\od x_j$ is an ordinary matrix--vector product over
+$(\Rn,\op,\od)$ and such layers compose as matrices do. The ``bi-identity''
+product $\ot$ plays no role in this layer; it is a separate fusion operator.
+\end{remark}
+
+\begin{proposition}[The directed coupling is a monoid action]\label{prop:action}
+For all $w,w',x,y\in\Rn$:\;
+$\nul\sk x=x$,\; $(w\ot w')\sk x=w\sk(w'\sk x)$,\;
+$w\sk(x\op y)=(w\sk x)\op(w\sk y)$,\; $w\sk\nul=\nul$.
+That is, $\sk$ is an action of the monoid $(\Rn,\ot)$ on the monoid $(\Rn,\op)$
+by endomorphisms.
+\end{proposition}
+
+\begin{remark}
+A null weight under $\sk$ acts as the weight $1$. This is a pass-through, not
+pruning: a pruned synapse must contribute nothing, which is what $\od$ gives.
+\end{remark}
+
+All statements of this section are checked exhaustively on a grid of
+representatives, and on random arrays, by \texttt{tests/test\_algebra.py}.
+
+\section{Relation to existing practice}
+
+The (value, mask) pair with these rules is not new; what the project adds is a
+single vocabulary across software and a tagged hardware cell.
+\begin{itemize}
+\item \textbf{Reductions.} $\bigoplus$ and $\bigotimes$ over an array are the
+  NaN-skipping reductions \texttt{nansum}/\texttt{nanprod} with the convention
+  that an all-missing reduction is missing. This is also the behaviour of
+  \texttt{numpy.ma} reductions and of SQL aggregates
+  (\texttt{SUM} skips \texttt{NULL} and returns \texttt{NULL} on all-\texttt{NULL}
+  input).
+\item \textbf{Element-wise operations.} $\od$ and $\oslash$ propagate absence
+  like IEEE NaN, SQL \texttt{NULL} and \texttt{numpy.ma} binary operations.
+  $\op$ and $\ot$ as \emph{binary} operations are the less common choice.
+\item \textbf{Layers.} Mask-aware layers that renormalise by the number of
+  valid inputs and propagate an updated mask are known from partial
+  convolutions (Liu et al., ECCV 2018); missingness indicators as inputs are
+  a standard baseline (e.g.\ GRU-D, Che et al., 2018).
+\item \textbf{Hardware.} Skipping multiply--accumulate operations for zero or
+  absent operands is established in sparse accelerators (e.g.\ Cnvlutin,
+  SCNN, Eyeriss).
+\end{itemize}
+The word ``causal'' in the project name is historical; the algebra has no
+connection with causal inference.
+
+\section{Linear layers over \texorpdfstring{$\Rn$}{R-null}}
+
+Let a neuron have weights $W_{i1},\dots,W_{in}\in\R$ and bias $b_i$, and let
+$\tilde x$ be the input with $\nul$ replaced by $0$.
+
+\begin{proposition}[Equivalence with zero imputation]\label{prop:impute}
+If at least one $x_j\neq\nul$, then
+$\bigl(\bigoplus_j W_{ij}\od x_j\bigr)\op b_i=\sum_j W_{ij}\tilde x_j+b_i$.
+If all $x_j=\nul$, the sum is $\nul$ and the layer outputs $\nul$ (the bias is
+not added).
+\end{proposition}
+
+So, without rescaling, the layer \emph{is} zero imputation; what it adds is
+the all-missing flag and, in the implementation, the per-neuron
+\emph{coverage} $k/n$ (the fraction of live synapses). Since inputs are
+usually standardised, zero imputation is mean imputation.
+
+\begin{proposition}[Rescaling]\label{prop:scale}
+Let $S=\sum_j W_{ij}x_j$ and let $L$ be a uniformly random subset of
+$\{1,\dots,n\}$ of size $k\geq 1$ (inputs missing completely at random), with
+$S_L=\sum_{j\in L}W_{ij}x_j$.
+\begin{enumerate}
+\item $\mathbb{E}_L\bigl[\tfrac{n}{k}S_L\bigr]=S$: the factor $n/k$ gives an
+      unbiased estimate of the full sum.
+\item If the $x_j$ are independent with mean $0$ and variance $1$, then
+      $\mathbb{E}\bigl[\tfrac{n}{k}S_L^2\bigr]=\mathbb{E}[S^2]$: the factor
+      $\sqrt{n/k}$ preserves the second moment, whereas the factor $n/k$
+      inflates it by $n/k$ and no rescaling shrinks it by $k/n$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+Each index lies in $L$ with probability $k/n$, so
+$\mathbb{E}_L[S_L]=\tfrac{k}{n}S$ and, under the assumptions of (2),
+$\mathbb{E}[S_L^2]=\mathbb{E}_L\sum_{j\in L}W_{ij}^2=\tfrac{k}{n}\sum_jW_{ij}^2
+=\tfrac{k}{n}\mathbb{E}[S^2]$.
+\end{proof}
+
+The implementation offers both (\texttt{normalize="mean"} and
+\texttt{"variance"}). Neither is correct for correlated inputs in general, and
+neither replaces a model of the missing values.
+
+\section{Frozen parameters}
+
+$W\op\nul=W$ expresses ``do not update this entry''. Giving the update of a
+set of entries the value $\nul$ is a masked update,
+$W\leftarrow W+\Delta W$ on the complement of the mask, and produces the same
+numbers bit for bit.
+
+For comparison, AdamW with a gradient that is merely zero applies
+$W_{t+1}=(1-\eta\lambda)W_t-\eta\,\hat m_t/(\sqrt{\hat v_t}+\varepsilon)$, so
+once the moment estimate has decayed
+$W_t\approx(1-\eta\lambda)^tW_0$ and the mean squared drift is
+$\bigl(1-(1-\eta\lambda)^t\bigr)^2\,\mathbb{E}[W_0^2]$. For $\eta=10^{-3}$,
+$\lambda=2\cdot10^{-2}$, $t=500$ this is about $10^{-4}$. The drift is real but
+small, and excluding the entries from the update removes it without any
+algebra. Freezing parameters does not by itself address catastrophic
+forgetting, which concerns which parameters to protect and how the remaining
+capacity is used.
+
+\section{The tagged multiply--accumulate cell}
+
+\texttt{hardware/rnull\_mac.v} implements
+$\mathrm{acc}\leftarrow\mathrm{acc}\op(w\od x)$ on signed $W$-bit operands, with
+one tag bit per operand. On a null operand the multiplier inputs are forced to
+zero and the accumulator is not enabled. The output tag \texttt{acc\_null}
+distinguishes ``nothing was accumulated'' from a real sum equal to $0$; this is
+the only functional difference from a conventional sparse MAC with zero
+skipping. The accumulator has $2W+G$ bits; since $|wx|\leq2^{2W-2}$, any
+$N\leq2^{G+1}-1$ products are summed exactly, and a sticky flag records
+overflow beyond that.
+
+If weights and inputs are null independently with probabilities $p_w,p_x$, the
+fraction of skipped cycles is $1-(1-p_w)(1-p_x)$. This is an \emph{activity}
+figure. No synthesis, timing, area or power results exist for this cell; the
+tag bits themselves cost storage and routing.
+
+\section{Measured results}\label{sec:evidence}
+
+All numbers below are produced by the scripts in \texttt{benchmarks/} (NumPy
+reference implementation, fixed seeds) and stored in
+\texttt{benchmarks/results/}.
+
+\paragraph{Skipped MAC operations} ($10^6$ synapses, 5 seeds).\quad
+
+\begin{center}
+\begin{tabular}{rrrr}
+\toprule
+$p_w=p_x$ & active (mean $\pm$ sd) & skipped, measured & $1-(1-p)^2$\\
+\midrule
+0.10 & $810\,047\pm34$ & 19.00\% & 19.00\%\\
+0.50 & $250\,204\pm176$ & 74.98\% & 75.00\%\\
+0.70 & $89\,970\pm322$ & 91.00\% & 91.00\%\\
+0.90 & $10\,011\pm110$ & 99.00\% & 99.00\%\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Drift of frozen weights} ($10^5$ weights $\sim N(0,1)$, 80\% frozen,
+50 warm-up steps, then 500 steps; mean squared difference from the
+consolidated values).\quad
+
+\begin{center}
+\begin{tabular}{rrrrr}
+\toprule
+$\eta$ & $\lambda$ & AdamW, zero gradient & masked update & null gradient\\
+\midrule
+$10^{-3}$ & $10^{-2}$ & $3.0\cdot10^{-5}$ & 0 & 0\\
+$10^{-3}$ & $2\cdot10^{-2}$ & $1.0\cdot10^{-4}$ & 0 & 0\\
+$10^{-2}$ & $10^{-1}$ & $1.4\cdot10^{-1}$ & 0 & 0\\
+\bottomrule
+\end{tabular}
+\end{center}
+The masked update and the null-gradient update agree on every weight (maximum
+absolute difference $0$).
+
+\paragraph{Output scale of a $64\to32$ layer} (independent standard normal
+inputs; standard deviation relative to complete inputs), in agreement with
+Proposition~\ref{prop:scale}.\quad
+
+\begin{center}
+\begin{tabular}{rrrr}
+\toprule
+missing & no rescaling & \texttt{"mean"} & \texttt{"variance"}\\
+\midrule
+0\% & 1.00 & 1.00 & 1.00\\
+30\% & 0.84 & 1.20 & 1.00\\
+60\% & 0.63 & 1.60 & 1.00\\
+90\% & 0.32 & 3.47 & 1.00\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Prediction with incomplete inputs} (one-hidden-layer MLP, 32 units;
+features removed completely at random at the same rate in training and test;
+mean $\pm$ sd over 5 seeds). ``impute'' is zero imputation of standardised
+inputs, which by Proposition~\ref{prop:impute} is the layer without rescaling;
+``impute+mask'' appends the missingness indicators.
+
+\begin{center}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrr}
+\toprule
+dataset (metric) & missing & impute & impute+mask & null, \texttt{"mean"} & null, \texttt{"variance"}\\
+\midrule
+synthetic ($R^2$)        & 0\%  & $0.878\pm0.038$ & $0.875\pm0.038$ & $0.878\pm0.038$ & $0.878\pm0.038$\\
+                         & 20\% & $0.763\pm0.052$ & $0.753\pm0.044$ & $0.753\pm0.057$ & $0.758\pm0.059$\\
+                         & 40\% & $0.694\pm0.054$ & $0.676\pm0.058$ & $0.671\pm0.061$ & $0.684\pm0.052$\\
+                         & 60\% & $0.566\pm0.073$ & $0.556\pm0.054$ & $0.518\pm0.078$ & $0.553\pm0.083$\\
+\midrule
+diabetes ($R^2$)         & 0\%  & $0.389\pm0.085$ & $0.404\pm0.074$ & $0.389\pm0.085$ & $0.389\pm0.085$\\
+                         & 20\% & $0.356\pm0.105$ & $0.378\pm0.049$ & $0.350\pm0.092$ & $0.340\pm0.118$\\
+                         & 40\% & $0.295\pm0.100$ & $0.283\pm0.069$ & $0.227\pm0.073$ & $0.293\pm0.072$\\
+                         & 60\% & $0.224\pm0.117$ & $0.166\pm0.112$ & $0.021\pm0.108$ & $0.173\pm0.095$\\
+\midrule
+breast cancer (accuracy) & 0\%  & $0.957\pm0.006$ & $0.969\pm0.020$ & $0.957\pm0.006$ & $0.957\pm0.006$\\
+                         & 20\% & $0.936\pm0.029$ & $0.944\pm0.027$ & $0.946\pm0.011$ & $0.937\pm0.030$\\
+                         & 40\% & $0.934\pm0.019$ & $0.944\pm0.020$ & $0.934\pm0.023$ & $0.934\pm0.019$\\
+                         & 60\% & $0.917\pm0.010$ & $0.927\pm0.032$ & $0.911\pm0.016$ & $0.911\pm0.020$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Reading.} Differences between methods are within one
+standard deviation almost everywhere. Null-aware rescaling does not improve
+on plain imputation on these problems, and the \texttt{"mean"} rescaling is
+clearly worse at high missing rates on the small regression set, consistent
+with the variance inflation of Proposition~\ref{prop:scale}. These are small
+tabular problems with missingness completely at random; they do not cover
+structured or informative missingness, sequences, or large models.
+
+\section{Scope}
+
+What the construction provides: a consistent way to carry ``absent'' through
+sums, products and linear layers; an explicit all-missing output instead of a
+bias-only output; exact freezing of selected entries; and a hardware cell
+whose result tag distinguishes an empty sum from a zero sum.
+
+What it does not provide, and earlier versions of the project material
+overstated: out-of-distribution detection (only the case of entirely missing
+input is flagged); a remedy for catastrophic forgetting; measured energy
+savings; or a predictive advantage over imputation.
+
+\end{document}

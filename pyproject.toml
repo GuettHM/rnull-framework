@@ -1,29 +1,29 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "rnull-framework"
-version = "1.0.1"
-description = "Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework: Dual-Tensor PyTorch emulator, drift-free continual learning, multimodal fusion, and Verilog RTL neuromorphic MAC."
+version = "1.1.0"
+description = "Masked real arithmetic with a null element that is the identity of both addition and multiplication: NumPy reference, PyTorch layers, and a tagged Verilog MAC cell."
 readme = "README.md"
 authors = [
     { name = "Hakim Guettal" }
 ]
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.9"
 keywords = [
-    "causal-transparency-algebra",
-    "rnull",
-    "null-net",
-    "neuromorphic-computing",
+    "missing-data",
+    "masked-arrays",
+    "sensor-fusion",
+    "sparse-neural-networks",
     "continual-learning",
-    "epistemic-abstention"
+    "verilog"
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -33,11 +33,13 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics"
 ]
 dependencies = [
-    "numpy>=1.22.0",
-    "torch>=2.0.0"
+    "numpy>=1.22.0"
 ]
 
 [project.optional-dependencies]
+torch = [
+    "torch>=2.0.0"
+]
 dev = [
     "pytest>=7.0.0"
 ]
@@ -45,5 +47,15 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/GuettHM/rnull-framework"
 Repository = "https://github.com/GuettHM/rnull-framework"
-Releases = "https://github.com/GuettHM/rnull-framework/releases/tag/v1.0.1"
+Changelog = "https://github.com/GuettHM/rnull-framework/blob/main/CHANGELOG.md"
 DOI = "https://doi.org/10.5281/zenodo.24175268"
+
+[tool.setuptools]
+packages = ["rnull"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "autograd: needs PyTorch autograd or torch.optim",
+]
