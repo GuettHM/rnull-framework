@@ -1,1788 +1,1296 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rnull-framework: Causal Transparency Algebra (ℝ∅) — Interactive Explorer (v1.1.0)</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter & JetBrains Mono for Swiss-precision scientific typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        lab: {
-                            950: '#060911',
-                            900: '#0B1120',
-                            800: '#111827',
-                            700: '#1E293B',
-                            600: '#334155',
-                            cyan: '#06B6D4',
-                            emerald: '#10B981',
-                            amber: '#F59E0B',
-                            rose: '#F43F5E',
-                            violet: '#8B5CF6'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #060911;
-            color: #F1F5F9;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.07) 0%, transparent 35%),
-                radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
-                linear-gradient(to right, rgba(30, 41, 59, 0.22) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(30, 41, 59, 0.22) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
-        }
-        .glass-panel {
-            background: rgba(11, 17, 32, 0.88);
-            backdrop-filter: blur(12px);
-            border: 1px solid #1E293B;
-        }
-        .mono-badge {
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: -0.02em;
-        }
-        input[type="range"] {
-            accent-color: #06B6D4;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0B1120;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .pulse-active {
-            animation: pulseGlow 2s infinite;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.45; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rnull-framework: Causal Transparency Algebra (ℝ∅) — interactive explorer</title>
+<meta name="description" content="Interactive explorer for rnull-framework v1.1.0: the operators of the algebra, its linear layer, the tagged MAC cell and the measured benchmark results.">
+<style>
+/* Draw the operator glyphs from one local math font so they match everywhere. */
+@font-face {
+  font-family: "Sym";
+  src: local("STIX Two Math"), local("Cambria Math"), local("DejaVu Sans"), local("Noto Sans Math"), local("Segoe UI Symbol"), local("Apple Symbols");
+  unicode-range: U+2205, U+2295-2299, U+25B7, U+211D, U+2212;
+}
+:root {
+  color-scheme: light;
+  --bg: #f1f1ee;
+  --surface: #fcfcfb;
+  --sunken: #f0efec;
+  --ink: #14171a;
+  --ink-2: #52514e;
+  --ink-3: #7d7c76;
+  --rule: #dcdcd6;
+  --accent: #1c5cab;
+  --accent-ink: #ffffff;
+  --hatch: #a9a8a0;
+  --good: #0a7d0a;
+  --bad: #c22f2f;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --serif: "Sym", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", Georgia, serif;
+  --sans: "Sym", "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "Sym", ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #111110;
+    --surface: #1a1a19;
+    --sunken: #232321;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --ink-3: #8f8e85;
+    --rule: #363633;
+    --accent: #86b6ef;
+    --accent-ink: #0d1b2e;
+    --hatch: #6b6a63;
+    --good: #3fbf3f;
+    --bad: #e66767;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 var(--sans);
+  -webkit-text-size-adjust: 100%;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+/* ---------- page frame ---------- */
+.frame { display: grid; grid-template-columns: 15rem minmax(0, 1fr); min-height: 100vh; }
+.side {
+  position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+  padding: 2rem 1.25rem 1.5rem 1.75rem; border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column; gap: 1.5rem;
+}
+.brand { font: 600 1.35rem/1.1 var(--serif); letter-spacing: -.01em; }
+.brand small { display: block; margin-top: .35rem; font: 400 .8rem/1.3 var(--sans); color: var(--ink-2); letter-spacing: 0; }
+.side nav { display: flex; flex-direction: column; gap: .1rem; }
+.side nav a {
+  color: var(--ink-2); text-decoration: none; padding: .32rem .6rem; margin-left: -.6rem;
+  border-radius: 4px; font-size: .93rem;
+}
+.side nav a:hover { color: var(--ink); background: var(--sunken); }
+.side nav a[aria-current="true"] { color: var(--ink); background: var(--sunken); font-weight: 600; }
+.side .meta { margin-top: auto; font-size: .8rem; color: var(--ink-2); display: grid; gap: .3rem; }
+.checks-pill { font-size: .8rem; color: var(--ink-2); display: flex; align-items: center; gap: .45rem; }
+.dot { width: .55rem; height: .55rem; border-radius: 50%; background: var(--ink-3); flex: none; }
+.dot.ok { background: var(--good); } .dot.fail { background: var(--bad); }
+
+main { padding: 2.5rem clamp(1rem, 4vw, 3.5rem) 4rem; max-width: 66rem; }
+.intro h1 { font: 600 clamp(1.9rem, 4.2vw, 2.9rem)/1.08 var(--serif); letter-spacing: -.02em; margin: 0 0 1rem; max-width: 20ch; }
+.intro p { font: 1.08rem/1.6 var(--serif); max-width: 62ch; margin: 0 0 .7rem; }
+.intro .status { font: .9rem/1.5 var(--sans); color: var(--ink-2); max-width: 70ch; }
+
+section { margin-top: 3.5rem; }
+section > h2 { font: 600 1.55rem/1.2 var(--serif); letter-spacing: -.01em; margin: 0 0 .4rem; }
+section > .lede { font: 1rem/1.6 var(--serif); color: var(--ink-2); max-width: 68ch; margin: 0 0 1.25rem; }
+h3 { font: 600 .98rem/1.3 var(--sans); margin: 1.6rem 0 .6rem; }
+.note { font-size: .88rem; color: var(--ink-2); max-width: 72ch; }
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 1.1rem 1.2rem; }
+.panel + .panel { margin-top: 1rem; }
+
+/* ---------- the null hatch: absence is drawn as a void ---------- */
+.void {
+  background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--hatch) 5px 6px);
+  background-color: transparent;
+}
+
+/* ---------- operand editors ---------- */
+.operands { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: end; }
+.operand { display: grid; gap: .25rem; }
+.operand > span { font-size: .8rem; color: var(--ink-2); }
+.operand .box { display: flex; border: 1px solid var(--rule); border-radius: 5px; overflow: hidden; background: var(--surface); }
+.operand input[type=number] {
+  width: 6.2rem; border: 0; padding: .45rem .55rem; font: 1rem var(--mono); color: var(--ink); background: transparent;
+}
+.operand input[type=number]:disabled { color: transparent; }
+.operand .box.is-null { position: relative; }
+.operand .box.is-null input[type=number] { background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--hatch) 5px 6px); }
+.tog { display: flex; align-items: center; gap: .3rem; padding: 0 .6rem; border-left: 1px solid var(--rule); font: .95rem var(--mono); cursor: pointer; user-select: none; background: var(--sunken); }
+.tog input { accent-color: var(--accent); margin: 0; }
+.presets { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem; }
+button, select {
+  font: .88rem var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--rule);
+  border-radius: 5px; padding: .42rem .75rem; cursor: pointer;
+}
+button:hover, select:hover { border-color: var(--ink-3); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+label.field { display: grid; gap: .25rem; font-size: .8rem; color: var(--ink-2); }
+.controls { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: end; }
+
+/* ---------- result tiles ---------- */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-top: 1.1rem; }
+.tile { background: var(--surface); padding: .85rem .95rem .8rem; display: grid; gap: .3rem; align-content: start; }
+.tile .expr { font: .86rem var(--mono); color: var(--ink-2); }
+.tile .val { font: 600 1.7rem/1.15 var(--mono); min-height: 2.1rem; padding: .05rem .3rem; margin: 0 -.3rem; border-radius: 3px; overflow-wrap: anywhere; }
+.tile .rule { font-size: .78rem; color: var(--ink-2); line-height: 1.35; }
+.tile .py { font: .74rem var(--mono); color: var(--ink-3); }
+@media (max-width: 40rem) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- tables ---------- */
+.tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+.tables .panel + .panel { margin-top: 0; }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; font: 600 .88rem var(--sans); padding-bottom: .4rem; }
+th, td { padding: .38rem .55rem; border-bottom: 1px solid var(--rule); text-align: right; }
+th { font-weight: 600; color: var(--ink-2); }
+th:first-child, td:first-child { text-align: left; }
+thead th { border-bottom: 1px solid var(--ink-3); }
+.op-table td, .op-table th { text-align: center; font-family: var(--mono); }
+.op-table th:first-child { text-align: center; color: var(--ink); }
+.scroll { overflow-x: auto; }
+.scroll th, .scroll td { white-space: nowrap; }
+#ly-table th:last-child, #ly-table td:last-child { text-align: left; padding-left: 2rem; }
+td.void, .cell.void { color: var(--ink); }
+
+/* ---------- derivation lines ---------- */
+.derive { display: grid; gap: .5rem; font: .95rem var(--mono); margin-top: 1rem; }
+.derive div { display: flex; flex-wrap: wrap; gap: .4rem .6rem; align-items: baseline; }
+.derive .lhs { color: var(--ink-2); min-width: 15.5rem; }
+.derive b { font-weight: 600; padding: 0 .3rem; border-radius: 3px; }
+.verdict { font: .9rem/1.5 var(--sans); margin-top: .9rem; padding-top: .8rem; border-top: 1px solid var(--rule); max-width: 72ch; }
+.facts { margin: 1rem 0 0; padding-left: 1.1rem; font: .97rem/1.6 var(--serif); max-width: 72ch; }
+.facts li { margin-bottom: .35rem; }
+
+/* ---------- linear layer cells ---------- */
+.cells { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: .35rem; }
+.cell {
+  border: 1px solid var(--rule); border-radius: 5px; padding: .45rem .2rem; text-align: center; background: var(--surface);
+  display: grid; gap: .1rem; font-family: var(--mono); cursor: pointer; min-height: 3.6rem;
+}
+.cell .x { font-size: .98rem; font-weight: 600; }
+.cell .w { font-size: .7rem; color: var(--ink-2); }
+.cell[aria-pressed="true"] { border-style: dashed; }
+@media (max-width: 34rem) { .cells { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* ---------- readouts ---------- */
+.readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-top: 1rem; }
+.readout { background: var(--surface); padding: .65rem .8rem; }
+.readout dt { font-size: .76rem; color: var(--ink-2); }
+.readout dd { margin: .15rem 0 0; font: 600 1.05rem var(--mono); overflow-wrap: anywhere; padding: 0 .25rem; margin-left: -.25rem; border-radius: 3px; }
+dl { margin: 0; }
+@media (max-width: 40rem) { .readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+details { margin-top: 1rem; }
+summary { cursor: pointer; font-size: .88rem; color: var(--ink-2); }
+pre { font: .8rem/1.5 var(--mono); background: var(--sunken); border-radius: 5px; padding: .9rem 1rem; overflow-x: auto; margin: .6rem 0 0; }
+
+/* ---------- charts ---------- */
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .axis-text { fill: var(--ink-2); font: 11px var(--sans); }
+.chart .end-label { fill: var(--ink); font: 600 11px var(--sans); }
+.chart .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot-end { stroke: var(--surface); stroke-width: 2; }
+.chart .cross { stroke: var(--ink-3); stroke-width: 1; visibility: hidden; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .82rem; color: var(--ink-2); margin-bottom: .5rem; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.legend i { width: 1.1rem; height: 0; border-top: 2px solid; display: inline-block; }
+.tip {
+  position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--rule); border-radius: 5px;
+  padding: .45rem .6rem; font-size: .8rem; box-shadow: 0 2px 10px rgb(0 0 0 / .12); visibility: hidden; white-space: nowrap; z-index: 2;
+}
+.tip .t { color: var(--ink-2); margin-bottom: .2rem; }
+.tip .r { display: flex; align-items: center; gap: .45rem; }
+.tip .r i { width: .9rem; border-top: 2px solid; }
+.tip .r b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.tip .r span { color: var(--ink-2); }
+.two { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 1.25rem; align-items: start; }
+@media (max-width: 52rem) { .two { grid-template-columns: 1fr; } }
+
+/* ---------- checks ---------- */
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0 1.5rem; }
+.checklist li { display: flex; gap: .55rem; align-items: baseline; padding: .32rem 0; border-bottom: 1px solid var(--rule); font-size: .88rem; }
+.checklist .mark { font: 600 .8rem var(--mono); flex: none; width: 2.6rem; }
+.checklist .mark.ok { color: var(--good); } .checklist .mark.fail { color: var(--bad); }
+
+footer { margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--ink-2); max-width: 72ch; }
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 56rem) {
+  .frame { grid-template-columns: 1fr; }
+  .side { position: static; height: auto; flex-direction: column; gap: .8rem; padding: 1.1rem 1rem .8rem; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .side nav { flex-direction: row; overflow-x: auto; gap: .2rem; padding-bottom: .2rem; }
+  .side nav a { white-space: nowrap; margin-left: 0; }
+  .side .meta { display: none; }
+  main { padding-top: 1.5rem; }
+  .derive .lhs { min-width: 0; }
+}
+@media print { .side { display: none; } .frame { display: block; } body { background: #fff; } }
+</style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+<body>
+<div class="frame">
 
-    <!-- TOP SCIENTIFIC HEADER -->
-    <header class="sticky top-0 z-30 border-b border-slate-800/90 bg-slate-950/90 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-            <!-- Left Brand & Metadata -->
-            <div class="flex items-start sm:items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500/20 via-slate-900 to-violet-500/20 border border-cyan-500/40 flex items-center justify-center shrink-0 shadow-lg shadow-cyan-950/50">
-                    <span class="font-mono font-bold text-xl text-cyan-400">ℝ<sub class="text-xs text-violet-400">∅</sub></span>
-                </div>
-                <div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">
-                            rnull-framework: Causal Transparency Algebra (<span class="font-mono text-cyan-400">ℝ∅</span>)
-                        </h1>
-                        <span class="mono-badge text-xs px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-semibold">
-                            v1.1.0
-                        </span>
-                        <a href="https://doi.org/10.5281/zenodo.24215450" target="_blank" rel="noopener noreferrer" 
-                           class="mono-badge text-xs px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/25 transition">
-                            DOI: 10.5281/zenodo.24215450 ↗
-                        </a>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-0.5">
-                        Author: <strong class="text-slate-200">Hakim Guettal</strong> &bull; JavaScript port of the <code class="text-cyan-300">(value, mask)</code> operators &amp; behavioural model of the tagged MAC cell
-                    </p>
-                </div>
-            </div>
+<aside class="side">
+  <div class="brand">rnull-framework<small>Interactive explorer, v1.1.0</small></div>
+  <nav aria-label="Sections">
+    <a href="#operators" aria-current="true">Operators</a>
+    <a href="#structure">Structure</a>
+    <a href="#layer">Linear layer</a>
+    <a href="#fusion">Product fusion</a>
+    <a href="#frozen">Frozen weights</a>
+    <a href="#mac">MAC cell</a>
+    <a href="#results">Measured results</a>
+    <a href="#checks">Consistency checks</a>
+  </nav>
+  <div class="checks-pill" id="checks-pill"><span class="dot"></span><span>Checks not run</span></div>
+  <div class="meta">
+    <a href="https://github.com/GuettHM/rnull-framework">Source on GitHub</a>
+    <a href="https://doi.org/10.5281/zenodo.24215450">DOI 10.5281/zenodo.24215450</a>
+    <a href="https://github.com/GuettHM/rnull-framework/blob/main/paper/rnull_technical_note.pdf">Technical note (PDF)</a>
+    <span>Hakim Guettal, MIT licence</span>
+  </div>
+</aside>
 
-            <!-- Right Quick Actions -->
-            <div class="flex flex-wrap items-center gap-2.5">
-                <div id="global-test-badge" class="mono-badge text-xs px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 text-slate-300 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                    <span>CONSISTENCY CHECKS: NOT RUN</span>
-                </div>
+<main>
+  <header class="intro">
+    <h1>Real arithmetic with a null identity element</h1>
+    <p>Causal Transparency Algebra extends the real numbers with one element, ∅, meaning that no value was supplied. It is distinct from a measured zero, and it is the identity of both addition and multiplication. Set an operand to ∅ below and watch what each operator does with it.</p>
+    <p class="status">Research prototype. This page is a JavaScript port for exploration; the Python package <code>rnull</code> is the reference implementation, and every number in <a href="#results">Measured results</a> comes from the repository's benchmark scripts.</p>
+  </header>
 
-                <button onclick="switchTab('tab-tests'); runAllUnitTests();" 
-                        class="text-xs font-medium px-3.5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold transition shadow-md shadow-cyan-500/10 flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Run Consistency Checks
-                </button>
+  <!-- ============================ OPERATORS ============================ -->
+  <section id="operators">
+    <h2>Operators</h2>
+    <p class="lede">A value is a pair: a number and a flag saying whether it is ∅. A hatched cell is ∅; a plain <code>0</code> is a real, measured zero.</p>
+    <div class="operands" id="op-operands"></div>
+    <div class="presets" id="op-presets"></div>
+    <div class="tiles" id="op-tiles" aria-live="polite"></div>
 
-                <button onclick="downloadDashboardFile()" 
-                        class="text-xs font-medium px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5"
-                        title="Download this standalone page as index.html for the dashboard/ directory of your GitHub repository">
-                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/>
-                    </svg>
-                    Download <code class="font-mono text-cyan-300">index.html</code>
-                </button>
-            </div>
+    <h3>Operation tables</h3>
+    <p class="note">Rows are the left operand, columns the right one; <code>x</code> and <code>y</code> stand for non-zero real numbers.</p>
+    <div class="tables" id="op-tables"></div>
+  </section>
+
+  <!-- ============================ STRUCTURE ============================ -->
+  <section id="structure">
+    <h2>Structure</h2>
+    <p class="lede">The fusion product ⊗ does not distribute over ⊕, and the gap is exactly <code>a</code> whenever <code>b</code> or <code>c</code> is ∅. The absorbing product ⊙ does distribute, which makes (ℝ∅, ⊕, ⊙) a commutative semiring.</p>
+    <div class="panel">
+      <div class="operands" id="st-operands"></div>
+      <div class="derive" id="st-derive" aria-live="polite"></div>
+      <div class="verdict" id="st-verdict"></div>
+    </div>
+    <ul class="facts">
+      <li>(ℝ∅, ⊕) and (ℝ∅, ⊗) are commutative monoids with the same identity ∅. There are no additive inverses: <code>x ⊖ x</code> is <code>0</code>, not ∅.</li>
+      <li>For real <code>a</code>: <code>(a⊗b ⊕ a⊗c) ⊖ a⊗(b⊕c)</code> equals <code>a</code> if <code>b</code> or <code>c</code> is ∅, and <code>0</code> otherwise. The detector χ∅ is the case <code>a = 1, b = 0</code>.</li>
+      <li>χ∅ agrees with the mask for every finite real number. For ±∞ it returns NaN, so the software reads the mask.</li>
+      <li>▷ is an action of the monoid (ℝ∅, ⊗) on (ℝ∅, ⊕): a null weight acts as the weight 1. It is a pass-through, not pruning.</li>
+    </ul>
+    <p class="note">Proofs are in the <a href="https://github.com/GuettHM/rnull-framework/blob/main/paper/rnull_technical_note.pdf">technical note</a>; the same laws are checked by <code>tests/test_algebra.py</code> and, for this page's port, under <a href="#checks">Consistency checks</a>.</p>
+  </section>
+
+  <!-- ============================ LINEAR LAYER ============================ -->
+  <section id="layer">
+    <h2>Linear layer</h2>
+    <p class="lede">One neuron, eight inputs: <code>y = ⊕ⱼ (wⱼ ⊙ xⱼ) ⊕ b</code>. Select an input to make it ∅. Without rescaling the result is exactly an ordinary layer on the zero-imputed input; what the layer adds is the coverage and an ∅ output when every input is missing.</p>
+    <div class="panel">
+      <div class="cells" id="ly-cells"></div>
+      <div class="presets" id="ly-presets"></div>
+      <div class="scroll" style="margin-top:1rem">
+        <table id="ly-table">
+          <thead><tr><th>normalize</th><th>Factor</th><th>Output y</th><th>What it preserves</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="note" id="ly-note" style="margin-bottom:0"></p>
+    </div>
+  </section>
+
+  <!-- ============================ FUSION ============================ -->
+  <section id="fusion">
+    <h2>Product fusion</h2>
+    <p class="lede">Multiplying modalities with ⊗ skips a missing one instead of zeroing the product. The value still changes, and the result mask does not record that a factor was dropped, so keep the count of present factors next to it.</p>
+    <div class="panel">
+      <div class="operands" id="fu-operands"></div>
+      <div class="scroll" style="margin-top:1rem">
+        <table id="fu-table">
+          <thead><tr><th>Treatment of a missing factor</th><th>Product</th><th>Factors present</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FROZEN WEIGHTS ============================ -->
+  <section id="frozen">
+    <h2>Frozen weights</h2>
+    <p class="lede">Under AdamW a zero gradient does not freeze a weight: decoupled weight decay and the decaying moment estimate still move it. An update that is ∅ leaves the weight unchanged, bit for bit. That is a masked update, and it gives the same numbers as <code>W[~mask] += dW[~mask]</code>.</p>
+    <div class="panel">
+      <div class="controls">
+        <label class="field">Learning rate
+          <select id="fz-lr"><option>0.0005</option><option selected>0.001</option><option>0.003</option><option>0.01</option></select></label>
+        <label class="field">Weight decay
+          <select id="fz-wd"><option>0.005</option><option>0.01</option><option selected>0.02</option><option>0.05</option><option>0.1</option></select></label>
+        <label class="field">Steps
+          <select id="fz-steps"><option>100</option><option selected>500</option><option>2000</option></select></label>
+      </div>
+      <div class="two" style="margin-top:1.1rem">
+        <div>
+          <div class="legend" id="fz-legend"></div>
+          <div class="chart" id="fz-chart"></div>
         </div>
+        <dl class="readouts" style="margin-top:0;grid-template-columns:1fr" id="fz-readouts"></dl>
+      </div>
+      <p class="note" style="margin-bottom:0">Six weights with a leftover first-moment estimate, simulated with the AdamW rule and zero gradient. The repository benchmark (10⁵ weights, 500 steps) is listed under <a href="#results">Measured results</a>.</p>
+    </div>
+  </section>
 
-        <!-- MODULE NAVIGATION TABS -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/60 bg-slate-900/50">
-            <nav class="flex overflow-x-auto py-1.5 gap-1.5 no-scrollbar" aria-label="Laboratory Modules">
-                <button onclick="switchTab('tab-algebra')" id="btn-tab-algebra"
-                        class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 bg-cyan-500/15 text-cyan-300 border border-cyan-500/40">
-                    <span>01. ℝ_∅ Algebra &amp; χ_∅(x) Detector</span>
-                </button>
-                <button onclick="switchTab('tab-fusion')" id="btn-tab-fusion"
-                        class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>02. Product Fusion &amp; Missing Inputs</span>
-                </button>
-                <button onclick="switchTab('tab-continual')" id="btn-tab-continual"
-                        class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>03. Frozen-Weight Drift</span>
-                </button>
-                <button onclick="switchTab('tab-hardware')" id="btn-tab-hardware"
-                        class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>04. Tagged MAC Cell</span>
-                </button>
-                <button onclick="switchTab('tab-tests')" id="btn-tab-tests"
-                        class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>05. Consistency Checks</span>
-                </button>
-            </nav>
-        </div>
-    </header>
-
-    <!-- MAIN WORKSPACE -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-
-        <!-- ========================================================================= -->
-        <!-- TAB 01: ALGEBRAIC SANDBOX, POLYNOMIAL DETECTOR & CAYLEY TABLES            -->
-        <!-- ========================================================================= -->
-        <section id="tab-algebra" class="tab-panel space-y-6">
-            <!-- Top Architecture Banner -->
-            <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-cyan-400">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <span class="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">Tab 01 &bull; Axiomatic Foundation &amp; Dual-Tensor Representation (v, m)</span>
-                        <h2 class="text-lg font-bold text-white mt-0.5">Interactive Operators <span class="font-mono text-cyan-300">(⊕, ⊗, ▷, ⊙)</span> &amp; Branchless Detector <span class="font-mono text-cyan-300">χ_∅(x)</span></h2>
-                        <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                            Inspect the mathematical alignment between the <strong>Universal Bi-Identity</strong> operators (<code class="text-cyan-300">x ⊕ ∅ = x</code>, <code class="text-cyan-300">x ⊗ ∅ = x</code> via logical intersection <code class="text-emerald-300">a.m &amp; b.m</code>) and the <strong>Synaptic Coupling</strong> operators (<code class="text-violet-300">W ▷ x</code> and <code class="text-amber-300">W ⊙ x</code>).
-                        </p>
-                    </div>
-                    <div class="flex flex-wrap gap-2 shrink-0">
-                        <button onclick="setAlgebraPreset(5.0, false, 0.0, true)" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-cyan-300 transition">
-                            Preset: a=5.0, b=∅
-                        </button>
-                        <button onclick="setAlgebraPreset(0.0, true, 3.5, false)" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-violet-300 transition">
-                            Skip Wire: W=∅, x=3.5
-                        </button>
-                        <button onclick="setAlgebraPreset(0.0, false, 0.0, false)" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-emerald-300 transition">
-                            Measured Zero: a=0.0, b=0.0
-                        </button>
-                        <button onclick="setAlgebraPreset(0.0, true, 0.0, true)" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 transition">
-                            Total Abstention: ∅, ∅
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Operands Controls Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Operand A Card -->
-                <div class="glass-panel rounded-2xl p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div>
-                            <span class="text-xs font-mono text-cyan-400 uppercase">Operand a (or Synaptic Weight W)</span>
-                            <h3 class="text-base font-bold text-white">RNullTensor <code class="font-mono text-cyan-300">a = (v_a, m_a)</code></h3>
-                        </div>
-                        <div id="badge-op-a" class="mono-badge text-sm px-3 py-1 rounded-lg bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 font-bold">
-                            5.00
-                        </div>
-                    </div>
-
-                    <!-- State Toggle A -->
-                    <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                        <div>
-                            <div class="text-xs font-semibold text-slate-200">Epistemic State <code class="font-mono text-cyan-300">a.m (is_null)</code></div>
-                            <div class="text-[11px] text-slate-400">Toggle between active real signal (<code class="font-mono">∈ ℝ</code>) and causal abstention (<code class="font-mono">∅</code>)</div>
-                        </div>
-                        <div class="flex rounded-lg p-0.5 bg-slate-950 border border-slate-700">
-                            <button id="btn-a-real" onclick="setOperandNull('a', false)" class="px-3 py-1.5 rounded-md text-xs font-mono font-semibold bg-cyan-500 text-slate-950 transition">
-                                Active ∈ ℝ (m = False)
-                            </button>
-                            <button id="btn-a-null" onclick="setOperandNull('a', true)" class="px-3 py-1.5 rounded-md text-xs font-mono font-semibold text-slate-400 hover:text-white transition">
-                                Abstention ∅ (m = True)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Numeric Value Slider A -->
-                    <div id="slider-wrap-a" class="space-y-2 transition-opacity">
-                        <div class="flex justify-between text-xs font-mono">
-                            <span class="text-slate-400">Dense FP32 Payload <code class="text-slate-200">a.v</code>:</span>
-                            <input type="number" id="num-a" value="5.0" step="0.5" min="-10" max="10" oninput="syncOperandFromInput('a', this.value)"
-                                   class="w-24 bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-right text-cyan-300 font-mono text-xs focus:outline-none focus:border-cyan-400">
-                        </div>
-                        <input type="range" id="range-a" min="-10" max="10" step="0.5" value="5.0" oninput="syncOperandFromRange('a', this.value)"
-                               class="w-full h-2 bg-slate-800 rounded-lg cursor-pointer">
-                        <div class="flex justify-between gap-1.5 pt-1">
-                            <button onclick="setOperandValue('a', -5.0)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300">-5.0</button>
-                            <button onclick="setOperandValue('a', 0.0)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-emerald-300 font-semibold">0.0 (Zero)</button>
-                            <button onclick="setOperandValue('a', 1.0)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-cyan-300 font-semibold">1.0 (Unit)</button>
-                            <button onclick="setOperandValue('a', 5.0)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300">+5.0</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Operand B Card -->
-                <div class="glass-panel rounded-2xl p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div>
-                            <span class="text-xs font-mono text-violet-400 uppercase">Operand b (or Input Signal x)</span>
-                            <h3 class="text-base font-bold text-white">RNullTensor <code class="font-mono text-violet-300">b = (v_b, m_b)</code></h3>
-                        </div>
-                        <div id="badge-op-b" class="mono-badge text-sm px-3 py-1 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold">
-                            ∅ (NULL)
-                        </div>
-                    </div>
-
-                    <!-- State Toggle B -->
-                    <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                        <div>
-                            <div class="text-xs font-semibold text-slate-200">Epistemic State <code class="font-mono text-violet-300">b.m (is_null)</code></div>
-                            <div class="text-[11px] text-slate-400">Toggle between active real signal (<code class="font-mono">∈ ℝ</code>) and causal abstention (<code class="font-mono">∅</code>)</div>
-                        </div>
-                        <div class="flex rounded-lg p-0.5 bg-slate-950 border border-slate-700">
-                            <button id="btn-b-real" onclick="setOperandNull('b', false)" class="px-3 py-1.5 rounded-md text-xs font-mono font-semibold text-slate-400 hover:text-white transition">
-                                Active ∈ ℝ (m = False)
-                            </button>
-                            <button id="btn-b-null" onclick="setOperandNull('b', true)" class="px-3 py-1.5 rounded-md text-xs font-mono font-semibold bg-amber-500 text-slate-950 transition">
-                                Abstention ∅ (m = True)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Numeric Value Slider B -->
-                    <div id="slider-wrap-b" class="space-y-2 transition-opacity opacity-40">
-                        <div class="flex justify-between text-xs font-mono">
-                            <span class="text-slate-400">Dense FP32 Payload <code class="text-slate-200">b.v</code>:</span>
-                            <input type="number" id="num-b" value="3.0" step="0.5" min="-10" max="10" oninput="syncOperandFromInput('b', this.value)"
-                                   class="w-24 bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-right text-violet-300 font-mono text-xs focus:outline-none focus:border-violet-400">
-                        </div>
-                        <input type="range" id="range-b" min="-10" max="10" step="0.5" value="3.0" oninput="syncOperandFromRange('b', this.value)"
-                               class="w-full h-2 bg-slate-800 rounded-lg cursor-pointer">
-                        <div class="flex justify-between gap-1.5 pt-1">
-                            <button onclick="setOperandValue('b', -5.0)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300">-5.0</button>
-                            <button onclick="setOperandValue('b', 0.0)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-emerald-300 font-semibold">0.0 (Zero)</button>
-                            <button onclick="setOperandValue('b', 1.0)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-cyan-300 font-semibold">1.0 (Unit)</button>
-                            <button onclick="setOperandValue('b', 3.5)" class="flex-1 py-1 text-[11px] font-mono rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300">+3.5</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Live 4-Operator Calculation Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Card 1: Extended Addition -->
-                <div class="glass-panel rounded-2xl p-4 border-t-2 border-t-cyan-400 flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <span class="font-mono font-bold text-cyan-300 text-sm">a ⊕ b</span>
-                            <span class="mono-badge text-[10px] px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300">__add__</span>
-                        </div>
-                        <div class="text-xs font-semibold text-white mt-1">Extended Addition (Bi-Identity)</div>
-                        <p class="text-[11px] text-slate-400 mt-1">
-                            Mask: <code class="text-emerald-300">m_out = a.m &amp; b.m</code><br>
-                            Masked replaced by <code class="text-slate-200">0.0</code>
-                        </p>
-                    </div>
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-                        <div class="flex justify-between text-[11px] text-slate-400">
-                            <span>Dual-Tensor:</span>
-                            <span id="op-add-dual" class="text-slate-200">(5.00, False)</span>
-                        </div>
-                        <div class="flex justify-between items-baseline pt-1 border-t border-slate-900">
-                            <span class="text-[11px] text-slate-400">Result ℝ_∅:</span>
-                            <span id="op-add-res" class="text-base font-bold text-cyan-300">5.00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2: Symmetric Multiplicative Fusion -->
-                <div class="glass-panel rounded-2xl p-4 border-t-2 border-t-emerald-400 flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <span class="font-mono font-bold text-emerald-300 text-sm">a ⊗ b</span>
-                            <span class="mono-badge text-[10px] px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300">__mul__</span>
-                        </div>
-                        <div class="text-xs font-semibold text-white mt-1">Symmetric Multiplicative Fusion</div>
-                        <p class="text-[11px] text-slate-400 mt-1">
-                            Mask: <code class="text-emerald-300">m_out = a.m &amp; b.m</code><br>
-                            Masked replaced by <code class="text-slate-200">1.0</code>
-                        </p>
-                    </div>
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-                        <div class="flex justify-between text-[11px] text-slate-400">
-                            <span>Dual-Tensor:</span>
-                            <span id="op-mul-dual" class="text-slate-200">(5.00, False)</span>
-                        </div>
-                        <div class="flex justify-between items-baseline pt-1 border-t border-slate-900">
-                            <span class="text-[11px] text-slate-400">Result ℝ_∅:</span>
-                            <span id="op-mul-res" class="text-base font-bold text-emerald-300">5.00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3: Directed Synaptic Skip -->
-                <div class="glass-panel rounded-2xl p-4 border-t-2 border-t-violet-400 flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <span class="font-mono font-bold text-violet-300 text-sm">a ▷ b (W ▷ x)</span>
-                            <span class="mono-badge text-[10px] px-2 py-0.5 rounded bg-violet-500/15 text-violet-300">synaptic_skip</span>
-                        </div>
-                        <div class="text-xs font-semibold text-white mt-1">Directed Synaptic Skip</div>
-                        <p class="text-[11px] text-slate-400 mt-1">
-                            If <code class="text-violet-300">W=∅, x∈ℝ</code>: passive wire <code class="text-slate-200">x</code><br>
-                            If <code class="text-amber-300">x=∅</code>: abstains <code class="text-amber-300">∅</code> (<code class="text-slate-200">m_out = b.m</code>)
-                        </p>
-                    </div>
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-                        <div class="flex justify-between text-[11px] text-slate-400">
-                            <span>Dual-Tensor:</span>
-                            <span id="op-skip-dual" class="text-slate-200">(0.00, True)</span>
-                        </div>
-                        <div class="flex justify-between items-baseline pt-1 border-t border-slate-900">
-                            <span class="text-[11px] text-slate-400">Result ℝ_∅:</span>
-                            <span id="op-skip-res" class="text-base font-bold text-amber-300">∅</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4: Absorbing Synaptic MAC -->
-                <div class="glass-panel rounded-2xl p-4 border-t-2 border-t-amber-400 flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <span class="font-mono font-bold text-amber-300 text-sm">a ⊙ b (W ⊙ x)</span>
-                            <span class="mono-badge text-[10px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-300">synaptic_mul</span>
-                        </div>
-                        <div class="text-xs font-semibold text-white mt-1">Absorbing Synaptic MAC</div>
-                        <p class="text-[11px] text-slate-400 mt-1">
-                            Mask: <code class="text-amber-300">m_out = a.m | b.m</code> (OR)<br>
-                            Used in Hardware RTL MAC
-                        </p>
-                    </div>
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-                        <div class="flex justify-between text-[11px] text-slate-400">
-                            <span>Dual-Tensor:</span>
-                            <span id="op-mac-dual" class="text-slate-200">(0.00, True)</span>
-                        </div>
-                        <div class="flex justify-between items-baseline pt-1 border-t border-slate-900">
-                            <span class="text-[11px] text-slate-400">Result ℝ_∅:</span>
-                            <span id="op-mac-res" class="text-base font-bold text-amber-300">∅</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Branchless Polynomial State Detector Inspector -->
-            <div class="glass-panel rounded-2xl p-5 space-y-4">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                    <div>
-                        <span class="text-xs font-mono text-cyan-400 uppercase">Theory note &sect;3 &bull; Distributivity defect</span>
-                        <h3 class="text-base font-bold text-white">Branchless Causal Defect Polynomial <span class="font-mono text-cyan-300">χ_∅(x) = ((1 ⊗ 0) ⊕ (1 ⊗ x)) ⊖ (1 ⊗ (0 ⊕ x))</span></h3>
-                    </div>
-                    <span class="mono-badge text-xs px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                        χ_∅(x) = 0 for finite x ∈ ℝ (including 0.0), χ_∅(∅) = 1
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Polynomial Evaluation on Operand a -->
-                    <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono font-semibold text-cyan-300">Step-by-Step Evaluation on Operand a: χ_∅(a)</span>
-                            <span id="chi-a-badge" class="mono-badge text-xs px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold">χ_∅(a) = 0</span>
-                        </div>
-                        <div id="chi-a-steps" class="font-mono text-xs space-y-1.5 text-slate-300 bg-slate-950/90 p-3 rounded-lg border border-slate-800/80">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
-
-                    <!-- Polynomial Evaluation on Operand b -->
-                    <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono font-semibold text-violet-300">Step-by-Step Evaluation on Operand b: χ_∅(b)</span>
-                            <span id="chi-b-badge" class="mono-badge text-xs px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">χ_∅(b) = 1</span>
-                        </div>
-                        <div id="chi-b-steps" class="font-mono text-xs space-y-1.5 text-slate-300 bg-slate-950/90 p-3 rounded-lg border border-slate-800/80">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Complete Operational Cayley Tables -->
-            <div class="glass-panel rounded-2xl p-5 space-y-4">
-                <div class="border-b border-slate-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                        <span class="text-xs font-mono text-slate-400 uppercase">Algebraic Specification</span>
-                        <h3 class="text-base font-bold text-white">Complete Operational Cayley Tables for <span class="font-mono text-cyan-300">⊕</span>, <span class="font-mono text-emerald-300">⊗</span>, <span class="font-mono text-violet-300">▷</span>, and <span class="font-mono text-amber-300">⊙</span></h3>
-                    </div>
-                    <span class="text-xs font-mono text-slate-400">Domain: <code class="text-slate-200">ℝ_∅ = ℝ ∪ {∅}</code></span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
-                    <!-- Cayley Table 1: Extended Addition -->
-                    <div class="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800 space-y-2">
-                        <div class="text-cyan-300 font-bold">1. Extended Addition (a ⊕ b)</div>
-                        <table class="w-full text-center border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400">
-                                    <th class="py-1.5 px-2 text-left">⊕</th>
-                                    <th class="py-1.5 px-2">b ∈ ℝ\{0}</th>
-                                    <th class="py-1.5 px-2">0</th>
-                                    <th class="py-1.5 px-2 text-amber-300">∅</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-800 text-slate-200">
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">a ∈ ℝ\{0}</td>
-                                    <td class="py-1.5 px-2">a + b</td>
-                                    <td class="py-1.5 px-2">a</td>
-                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">a</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">0</td>
-                                    <td class="py-1.5 px-2">b</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">0</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-amber-300 font-bold">∅</td>
-                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">b</td>
-                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">0</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Cayley Table 2: Multiplicative Fusion -->
-                    <div class="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800 space-y-2">
-                        <div class="text-emerald-300 font-bold">2. Multiplicative Fusion (a ⊗ b)</div>
-                        <table class="w-full text-center border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400">
-                                    <th class="py-1.5 px-2 text-left">⊗</th>
-                                    <th class="py-1.5 px-2">b ∈ ℝ\{0}</th>
-                                    <th class="py-1.5 px-2">0</th>
-                                    <th class="py-1.5 px-2 text-amber-300">∅</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-800 text-slate-200">
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">a ∈ ℝ\{0}</td>
-                                    <td class="py-1.5 px-2">a · b</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2 text-emerald-300 font-bold">a</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">0</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2 text-emerald-300 font-bold">0</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-amber-300 font-bold">∅</td>
-                                    <td class="py-1.5 px-2 text-emerald-300 font-bold">b</td>
-                                    <td class="py-1.5 px-2 text-emerald-300 font-bold">0</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Cayley Table 3: Directed Synaptic Skip -->
-                    <div class="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800 space-y-2">
-                        <div class="text-violet-300 font-bold">3. Directed Skip (W ▷ x)</div>
-                        <table class="w-full text-center border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400">
-                                    <th class="py-1.5 px-2 text-left">W \ x</th>
-                                    <th class="py-1.5 px-2">x ∈ ℝ\{0}</th>
-                                    <th class="py-1.5 px-2">0</th>
-                                    <th class="py-1.5 px-2 text-amber-300">∅</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-800 text-slate-200">
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">W ∈ ℝ\{0}</td>
-                                    <td class="py-1.5 px-2">W · x</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">0</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-violet-300 font-bold">∅ (Skip)</td>
-                                    <td class="py-1.5 px-2 text-violet-300 font-bold">x</td>
-                                    <td class="py-1.5 px-2 text-violet-300 font-bold">0</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Cayley Table 4: Absorbing Synaptic MAC -->
-                    <div class="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800 space-y-2">
-                        <div class="text-amber-300 font-bold">4. Absorbing MAC (W ⊙ x)</div>
-                        <table class="w-full text-center border-collapse">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400">
-                                    <th class="py-1.5 px-2 text-left">⊙</th>
-                                    <th class="py-1.5 px-2">x ∈ ℝ\{0}</th>
-                                    <th class="py-1.5 px-2">0</th>
-                                    <th class="py-1.5 px-2 text-amber-300">∅</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-800 text-slate-200">
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">W ∈ ℝ\{0}</td>
-                                    <td class="py-1.5 px-2">W · x</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-slate-400">0</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2">0</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-1.5 px-2 text-left text-amber-300 font-bold">∅</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                    <td class="py-1.5 px-2 text-amber-300 font-bold">∅</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- TAB 02: PRODUCT FUSION & MISSING INPUTS                                  -->
-        <!-- ========================================================================= -->
-        <section id="tab-fusion" class="tab-panel hidden space-y-6">
-            <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-emerald-400">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <span class="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold">Tab 02 &bull; Product Fusion &amp; All-Missing Abstention</span>
-                        <h2 class="text-lg font-bold text-white mt-0.5">Product Fusion <span class="font-mono text-emerald-300">Y = S_cam ⊗ S_lidar ⊗ S_radar</span> + Static Bias <span class="font-mono text-slate-300">b = +2.50</span></h2>
-                        <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                            Compare how Classical Real Arithmetic (<code class="font-mono">ℝ</code>), IEEE-754 <code class="font-mono">NaN</code>, and Causal Transparency Algebra (<code class="font-mono text-emerald-300">ℝ_∅</code>) handle single-sensor dropout (<code class="text-amber-300">S_lidar = ∅</code>) versus all sensors missing (<code class="text-rose-300">all ∅</code>). Dropping a factor changes the magnitude of the product and the result mask does not record it, so the number of sensors present is shown next to the output.
-                        </p>
-                    </div>
-                    <div class="flex flex-wrap gap-2 shrink-0">
-                        <button onclick="setFusionScenario('nominal')" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-emerald-300 transition">
-                            All Sensors Online
-                        </button>
-                        <button onclick="setFusionScenario('lidar_null')" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 transition">
-                            LiDAR Failure (S_lidar = ∅)
-                        </button>
-                        <button onclick="setFusionScenario('all_null')" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-rose-950/80 hover:bg-rose-900/70 border border-rose-500/40 text-rose-300 transition">
-                            All Sensors Missing (all ∅)
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3 Sensors Control Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <!-- Camera Sensor -->
-                <div class="glass-panel rounded-2xl p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-mono font-bold text-cyan-300">SENSOR 01 &bull; Camera (S_cam)</span>
-                        <span id="fusion-cam-badge" class="mono-badge text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300">2.00</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px] font-mono">
-                        <button id="cam-mode-real" onclick="setSensorMode('cam', 'real')" class="py-1.5 rounded bg-cyan-500 text-slate-950 font-bold">ONLINE ∈ ℝ</button>
-                        <button id="cam-mode-null" onclick="setSensorMode('cam', 'null')" class="py-1.5 rounded text-slate-400 hover:text-white">OFFLINE = ∅</button>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-xs font-mono text-slate-400">
-                            <span>Signal Magnitude:</span>
-                            <span id="cam-val-label" class="text-slate-200">2.00</span>
-                        </div>
-                        <input type="range" id="cam-slider" min="-5" max="5" step="0.5" value="2.0" oninput="setSensorValue('cam', this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                    </div>
-                </div>
-
-                <!-- LiDAR Sensor -->
-                <div class="glass-panel rounded-2xl p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-mono font-bold text-amber-300">SENSOR 02 &bull; LiDAR (S_lidar)</span>
-                        <span id="fusion-lidar-badge" class="mono-badge text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">∅ (OFFLINE)</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px] font-mono">
-                        <button id="lidar-mode-real" onclick="setSensorMode('lidar', 'real')" class="py-1.5 rounded text-slate-400 hover:text-white">ONLINE ∈ ℝ</button>
-                        <button id="lidar-mode-null" onclick="setSensorMode('lidar', 'null')" class="py-1.5 rounded bg-amber-500 text-slate-950 font-bold">OFFLINE = ∅</button>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-xs font-mono text-slate-400">
-                            <span>Signal Magnitude:</span>
-                            <span id="lidar-val-label" class="text-slate-200">3.00</span>
-                        </div>
-                        <input type="range" id="lidar-slider" min="-5" max="5" step="0.5" value="3.0" oninput="setSensorValue('lidar', this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                    </div>
-                </div>
-
-                <!-- Radar Sensor -->
-                <div class="glass-panel rounded-2xl p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-mono font-bold text-emerald-300">SENSOR 03 &bull; Radar (S_radar)</span>
-                        <span id="fusion-radar-badge" class="mono-badge text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">4.00</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px] font-mono">
-                        <button id="radar-mode-real" onclick="setSensorMode('radar', 'real')" class="py-1.5 rounded bg-emerald-500 text-slate-950 font-bold">ONLINE ∈ ℝ</button>
-                        <button id="radar-mode-null" onclick="setSensorMode('radar', 'null')" class="py-1.5 rounded text-slate-400 hover:text-white">OFFLINE = ∅</button>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-xs font-mono text-slate-400">
-                            <span>Signal Magnitude:</span>
-                            <span id="radar-val-label" class="text-slate-200">4.00</span>
-                        </div>
-                        <input type="range" id="radar-slider" min="-5" max="5" step="0.5" value="4.0" oninput="setSensorValue('radar', this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Architecture Comparison Output Cards -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                <!-- 1. Classical Real Arithmetic -->
-                <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase text-slate-400">1. Classical Real Arithmetic (ℝ)</span>
-                            <span id="status-classic" class="mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">SIGNAL COLLAPSE</span>
-                        </div>
-                        <h4 class="text-sm font-bold text-white mt-1">Zero Imputation (<code class="font-mono">∅ ↦ 0.0</code>)</h4>
-                        <p class="text-xs text-slate-400 mt-1" id="desc-classic">
-                            Imputing an offline sensor with <code class="font-mono">0.0</code> zeroes out the entire product (<code class="font-mono">x · 0 = 0</code>), leaving only the static bias (<code class="font-mono">+2.50</code>) so the output is the bias alone when all inputs are missing.
-                        </p>
-                    </div>
-                    <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-                        <div class="text-slate-400" id="eq-classic">y = (2.0 × 0.0 × 4.0) + 2.50</div>
-                        <div class="text-base font-bold text-rose-400 pt-1" id="out-classic">Output: +2.50 (Bias Only!)</div>
-                    </div>
-                </div>
-
-                <!-- 2. IEEE-754 NaN -->
-                <div class="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase text-slate-400">2. IEEE-754 Floating-Point</span>
-                            <span id="status-nan" class="mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">NaN PROPAGATES</span>
-                        </div>
-                        <h4 class="text-sm font-bold text-white mt-1">Destructive <code class="font-mono">NaN</code> Propagation</h4>
-                        <p class="text-xs text-slate-400 mt-1" id="desc-nan">
-                            Because IEEE-754 <code class="font-mono">NaN</code> is an absorbing element for both addition and multiplication, a single offline sensor makes the whole result NaN.
-                        </p>
-                    </div>
-                    <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
-                        <div class="text-slate-400" id="eq-nan">y = (2.0 × NaN × 4.0) + 2.50</div>
-                        <div class="text-base font-bold text-rose-400 pt-1" id="out-nan">Output: NaN</div>
-                    </div>
-                </div>
-
-                <!-- 3. Causal Transparency Algebra (R_null) -->
-                <div class="glass-panel rounded-2xl p-5 border-2 border-emerald-500/50 bg-emerald-950/10 flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase text-emerald-400 font-semibold">3. Causal Transparency (ℝ_∅)</span>
-                            <span id="status-rnull" class="mono-badge text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">NULL FACTOR SKIPPED</span>
-                        </div>
-                        <h4 class="text-sm font-bold text-white mt-1">Bi-Identity <code class="font-mono text-emerald-300">⊗</code> + Bias Suppression</h4>
-                        <p class="text-xs text-slate-300 mt-1" id="desc-rnull">
-                            Offline sensors (<code class="font-mono">∅</code>) drop out transparently via <code class="font-mono">S_cam ⊗ ∅ ⊗ S_radar = S_cam ⊗ S_radar</code>. Under total blackout (<code class="font-mono">X = ∅</code>), <code class="font-mono">RNullLinear</code> suppresses bias and outputs <code class="font-mono">Y = ∅</code>.
-                        </p>
-                    </div>
-                    <div class="bg-slate-950 p-3.5 rounded-xl border border-emerald-500/40 font-mono text-xs space-y-1">
-                        <div class="text-slate-300" id="eq-rnull">y = (2.0 ⊗ ∅ ⊗ 4.0) + 2.50</div>
-                        <div class="text-base font-bold text-emerald-400 pt-1" id="out-rnull">Output: 10.50 (m = False)</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- TAB 03: DRIFT-FREE CONTINUAL LEARNING SIMULATOR                           -->
-        <!-- ========================================================================= -->
-        <section id="tab-continual" class="tab-panel hidden space-y-6">
-            <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-violet-400">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div>
-                        <span class="text-[11px] font-mono uppercase tracking-wider text-violet-400 font-semibold">Tab 03 &bull; Frozen-Weight Drift Under AdamW</span>
-                        <h2 class="text-lg font-bold text-white mt-0.5">Exact Parameter Freezing: <span class="font-mono text-violet-300">W(t+1) = W(t) ⊕ ΔW</span> with <span class="font-mono text-amber-300">ΔW = ∅</span></h2>
-                        <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                            With AdamW, a zero gradient does not freeze a weight: decoupled weight decay (<code class="font-mono">−lr·λ·W</code>) and the decaying first-moment estimate still move it, slowly. Giving frozen weights <code class="font-mono text-amber-300">ΔW = ∅</code> leaves them bit-for-bit unchanged. That is numerically identical to a masked update (<code class="font-mono">W[~mask] += ΔW[~mask]</code>) or to excluding the weights from the optimizer; this tab simply applies the AdamW rule with zero gradient to six frozen weights and shows the difference.
-                        </p>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 shrink-0">
-                        <button onclick="stepContinualLearning(1)" class="text-xs font-mono px-3.5 py-2 rounded-lg bg-violet-500 hover:bg-violet-400 text-slate-950 font-bold transition">
-                            +1 Step
-                        </button>
-                        <button onclick="stepContinualLearning(50)" class="text-xs font-mono px-3.5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition">
-                            +50 Steps
-                        </button>
-                        <button onclick="resetContinualLearning()" class="text-xs font-mono px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
-                            Reset Weights
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Optimizer Hyperparameters & Telemetry -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                <div class="glass-panel rounded-2xl p-5 space-y-4">
-                    <h3 class="text-xs font-mono uppercase text-slate-400 font-semibold">Optimizer Hyperparameters</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between text-xs font-mono">
-                            <span class="text-slate-300">Weight Decay (λ):</span>
-                            <span id="cl-lambda-val" class="text-cyan-300">0.020</span>
-                        </div>
-                        <input type="range" id="cl-lambda" min="0.005" max="0.05" step="0.005" value="0.02" oninput="document.getElementById('cl-lambda-val').textContent = Number(this.value).toFixed(3)" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                    </div>
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between text-xs font-mono">
-                            <span class="text-slate-300">Learning rate (lr):</span>
-                            <span id="cl-lr-val" class="text-violet-300">0.0010</span>
-                        </div>
-                        <input type="range" id="cl-lr" min="0.0005" max="0.01" step="0.0005" value="0.001" oninput="document.getElementById('cl-lr-val').textContent = Number(this.value).toFixed(4)" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                    </div>
-                    <div class="pt-2 border-t border-slate-800 flex items-center justify-between font-mono text-xs">
-                        <span class="text-slate-400">Optimizer Steps Executed:</span>
-                        <span id="cl-step-count" class="text-base font-bold text-white">t = 0</span>
-                    </div>
-                </div>
-
-                <!-- Standard AdamW Drift Score -->
-                <div class="glass-panel rounded-2xl p-5 border border-rose-500/30 bg-rose-950/10 flex flex-col justify-between">
-                    <div>
-                        <span class="text-xs font-mono uppercase text-rose-400 font-semibold">Standard AdamW (∇W = 0)</span>
-                        <h4 class="text-sm font-bold text-white mt-1">Drift on 6 Frozen Task-A Weights</h4>
-                        <p class="text-xs text-slate-400 mt-1">
-                            With zero gradient, <code class="font-mono">W(t+1) = W(t) − lr·λ·W(t) − lr·m/(√v + ε)</code> still moves the weight. The drift is small for typical settings and grows with lr·λ·t.
-                        </p>
-                    </div>
-                    <div class="mt-4 bg-slate-950 p-3.5 rounded-xl border border-rose-500/30 font-mono">
-                        <div class="text-[11px] text-slate-400">Mean Squared Error (MSE Drift):</div>
-                        <div id="cl-mse-std" class="text-xl font-bold text-rose-400 mt-0.5">0.0000000000</div>
-                    </div>
-                </div>
-
-                <!-- R_null Zero-Drift Score -->
-                <div class="glass-panel rounded-2xl p-5 border-2 border-emerald-500/40 bg-emerald-950/10 flex flex-col justify-between">
-                    <div>
-                        <span class="text-xs font-mono uppercase text-emerald-400 font-semibold">ℝ_∅ Protected Update (ΔW = ∅)</span>
-                        <h4 class="text-sm font-bold text-white mt-1">Frozen Rule: <code class="font-mono text-emerald-300">W(t) ⊕ ∅ = W(t)</code></h4>
-                        <p class="text-xs text-slate-300 mt-1">
-                            Setting <code class="font-mono">frozen_mask = True</code> assigns <code class="font-mono">ΔW = ∅</code>, so the whole update (gradient, momentum, decay) is skipped. Same numbers as a masked update.
-                        </p>
-                    </div>
-                    <div class="mt-4 bg-slate-950 p-3.5 rounded-xl border border-emerald-500/40 font-mono">
-                        <div class="text-[11px] text-slate-400">Mean Squared Error (MSE Drift):</div>
-                        <div id="cl-mse-rnull" class="text-xl font-bold text-emerald-400 mt-0.5">0.0000000000</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Weight Bars Comparison Table -->
-            <div class="glass-panel rounded-2xl p-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold">Synaptic Weight Vector W[0..7] (6 Frozen Task-A Weights + 2 Plastic Task-B Weights)</h3>
-                    <span class="text-xs font-mono text-slate-400">Live comparison against initial state <code class="text-white">W(t=0)</code></span>
-                </div>
-                <div id="cl-weights-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- TAB 04: TAGGED MAC CELL (rnull_mac.v)                                    -->
-        <!-- ========================================================================= -->
-        <section id="tab-hardware" class="tab-panel hidden space-y-6">
-            <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-amber-400">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div>
-                        <span class="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-semibold">Tab 04 &bull; Behavioural model of `hardware/rnull_mac.v`</span>
-                        <h2 class="text-lg font-bold text-white mt-0.5">MAC Cell with 1-Bit Null Tags &amp; <span class="font-mono text-amber-300">∅-Bypass</span></h2>
-                        <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                            When <code class="font-mono text-cyan-300">syn_null = w_null | x_null == 1'b1</code>, the multiplier operands are forced to zero (operand isolation) and the accumulator is not enabled, so <code class="font-mono text-emerald-300">Acc(t) = Acc(t-1)</code>. This page models the behaviour in floating point; the RTL is fixed-point with guard bits and an overflow flag. The skipped-cycle ratio is an activity figure, not a power measurement.
-                        </p>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 shrink-0">
-                        <button onclick="runRtlBenchmark()" class="text-xs font-mono px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition shadow-md shadow-amber-500/10">
-                            Run 1,000 random cycles
-                        </button>
-                        <button onclick="resetRtlAccumulator()" class="text-xs font-mono px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
-                            Clear Accumulator
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Interactive Single-Cycle RTL Inspector & Benchmark -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Left: RTL Pin Controls -->
-                <div class="lg:col-span-5 glass-panel rounded-2xl p-5 space-y-4">
-                    <h3 class="text-xs font-mono uppercase text-amber-400 font-semibold border-b border-slate-800 pb-2">
-                        Synaptic Register Inputs (Single Clock Cycle)
-                    </h3>
-
-                    <!-- Weight Pin -->
-                    <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono font-bold text-cyan-300">Pin w_val [15:0] &amp; w_null</span>
-                            <button id="rtl-w-null-btn" onclick="toggleRtlPin('w')" class="mono-badge text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-600">
-                                w_null = 1'b0 (Active)
-                            </button>
-                        </div>
-                        <input type="range" id="rtl-w-val" min="-8" max="8" step="0.5" value="2.5" oninput="updateRtlPreview()" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                        <div class="flex justify-between text-[11px] font-mono text-slate-400">
-                            <span>Weight Payload:</span>
-                            <span id="rtl-w-label" class="text-cyan-300 font-bold">2.50</span>
-                        </div>
-                    </div>
-
-                    <!-- Input Pin -->
-                    <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono font-bold text-violet-300">Pin x_val [15:0] &amp; x_null</span>
-                            <button id="rtl-x-null-btn" onclick="toggleRtlPin('x')" class="mono-badge text-xs px-2.5 py-1 rounded bg-amber-500 text-slate-950 font-bold">
-                                x_null = 1'b1 (∅ Bypass)
-                            </button>
-                        </div>
-                        <input type="range" id="rtl-x-val" min="-8" max="8" step="0.5" value="4.0" oninput="updateRtlPreview()" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                        <div class="flex justify-between text-[11px] font-mono text-slate-400">
-                            <span>Input Payload:</span>
-                            <span id="rtl-x-label" class="text-violet-300 font-bold">4.00</span>
-                        </div>
-                    </div>
-
-                    <button onclick="clockRtlStep()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-mono font-bold text-xs shadow-lg transition">
-                        ⚡ Clock PosEdge (clk ↑)
-                    </button>
-
-                    <!-- Sparsity Batch Slider -->
-                    <div class="pt-3 border-t border-slate-800 space-y-2">
-                        <div class="flex justify-between text-xs font-mono">
-                            <span class="text-slate-300">Null rate per operand (w, x independent):</span>
-                            <span id="rtl-sparsity-label" class="text-amber-300 font-bold">70%</span>
-                        </div>
-                        <input type="range" id="rtl-sparsity" min="0" max="95" step="5" value="70" oninput="document.getElementById('rtl-sparsity-label').textContent = this.value + '%'" class="w-full h-1.5 bg-slate-800 rounded-lg">
-                    </div>
-                </div>
-
-                <!-- Right: Live RTL Gate Telemetry & Accumulator -->
-                <div class="lg:col-span-7 glass-panel rounded-2xl p-5 flex flex-col justify-between space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                        <h3 class="text-xs font-mono uppercase text-slate-300 font-semibold">Internal RTL Wire &amp; Register Telemetry (`rnull_mac.v`)</h3>
-                        <span id="rtl-gate-status" class="mono-badge text-xs px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">
-                            ∅-BYPASS ACTIVE
-                        </span>
-                    </div>
-
-                    <!-- RTL Signals Readout Grid -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono text-xs">
-                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                            <div class="text-[10px] text-slate-400">wire syn_null = w_null | x_null</div>
-                            <div id="sig-syn-null" class="text-base font-bold text-amber-400 mt-1">1'b1 (∅)</div>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                            <div class="text-[10px] text-slate-400">wire gated_w / gated_x</div>
-                            <div id="sig-gated-wx" class="text-base font-bold text-slate-300 mt-1">0.00 / 0.00</div>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                            <div class="text-[10px] text-slate-400">wire prod (Multiplier Tree)</div>
-                            <div id="sig-prod" class="text-base font-bold text-slate-400 mt-1">ISOLATED (operands = 0)</div>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-xl border border-cyan-500/30">
-                            <div class="text-[10px] text-cyan-400">reg acc_val (Accumulator)</div>
-                            <div id="sig-acc-val" class="text-base font-bold text-cyan-300 mt-1">0.00</div>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-xl border border-cyan-500/30">
-                            <div class="text-[10px] text-cyan-400">reg acc_null (Epistemic Bit)</div>
-                            <div id="sig-acc-null" class="text-base font-bold text-amber-300 mt-1">1'b1 (∅)</div>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/30">
-                            <div class="text-[10px] text-emerald-400">Skipped / total cycles</div>
-                            <div id="sig-bypass-ratio" class="text-base font-bold text-emerald-400 mt-1">0 / 0 (0.0%)</div>
-                        </div>
-                    </div>
-
-                    <!-- Synthesizable Verilog Snippet -->
-                    <div class="bg-slate-950 rounded-xl p-3.5 border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed">
-<pre><span class="text-slate-500">// hardware/rnull_mac.v (abridged): 1-bit null tags, operand isolation, guard bits</span>
-<span class="text-cyan-400">module</span> rnull_mac #(<span class="text-cyan-400">parameter</span> WIDTH = 16, <span class="text-cyan-400">parameter</span> GUARD = 8) (
-    <span class="text-cyan-400">input  wire</span>        clk, rst_n, clear_acc, w_null, x_null,
-    <span class="text-cyan-400">input  wire signed</span> [WIDTH-1:0] w_val, x_val,
-    <span class="text-cyan-400">output reg  signed</span> [2*WIDTH+GUARD-1:0] acc_val,
-    <span class="text-cyan-400">output reg</span>         acc_null, acc_ovf
+  <!-- ============================ MAC CELL ============================ -->
+  <section id="mac">
+    <h2>MAC cell</h2>
+    <p class="lede">A bit-accurate model of <code>hardware/rnull_mac.v</code>: signed integer operands, each with a one-bit null tag. A null operand skips the cycle and the accumulator holds. <code>acc_null</code> separates "nothing accumulated" from a real sum of 0.</p>
+    <div class="panel">
+      <div class="controls">
+        <label class="field">Configuration
+          <select id="mc-config">
+            <option value="16,8">WIDTH 16, GUARD 8 (40-bit accumulator)</option>
+            <option value="4,1">WIDTH 4, GUARD 1 (9-bit, overflows quickly)</option>
+          </select></label>
+        <div id="mc-operands" class="operands"></div>
+        <button class="primary" id="mc-clock">Clock one cycle</button>
+        <button id="mc-clear">Clear accumulator</button>
+      </div>
+      <dl class="readouts" id="mc-readouts"></dl>
+      <h3>Random stream</h3>
+      <div class="controls">
+        <label class="field">Null rate of weights <span id="mc-pw-v" class="mono">0.70</span>
+          <input type="range" id="mc-pw" min="0" max="0.95" step="0.05" value="0.7"></label>
+        <label class="field">Null rate of inputs <span id="mc-px-v" class="mono">0.70</span>
+          <input type="range" id="mc-px" min="0" max="0.95" step="0.05" value="0.7"></label>
+        <button id="mc-run">Run 1,000 random cycles</button>
+      </div>
+      <p class="note" id="mc-stream" style="margin-bottom:0"></p>
+      <details>
+        <summary>RTL of the cell, abridged</summary>
+<pre>module rnull_mac #(parameter WIDTH = 16, parameter GUARD = 8) (
+    input  wire                            clk, rst_n, clear_acc,
+    input  wire signed [WIDTH-1:0]         w_val, x_val,
+    input  wire                            w_null, x_null,
+    output reg  signed [2*WIDTH+GUARD-1:0] acc_val,
+    output reg                             acc_null, acc_ovf
 );
-    <span class="text-cyan-400">wire</span> syn_null = w_null | x_null;                 <span class="text-slate-500">// synapse skipped if either operand is null</span>
-    <span class="text-cyan-400">wire signed</span> [WIDTH-1:0] gated_w = syn_null ? 0 : w_val; <span class="text-slate-500">// operand isolation</span>
-    <span class="text-cyan-400">wire signed</span> [WIDTH-1:0] gated_x = syn_null ? 0 : x_val;
-    <span class="text-slate-500">// prod = gated_w * gated_x, sign-extended; acc_sum = (acc_null ? 0 : acc_val) + prod</span>
-
-    <span class="text-cyan-400">always</span> @(posedge clk or negedge rst_n) <span class="text-cyan-400">begin</span>
-        <span class="text-cyan-400">if</span> (!rst_n)          <span class="text-cyan-400">begin</span> acc_val &lt;= 0; acc_null &lt;= 1'b1; acc_ovf &lt;= 1'b0; <span class="text-cyan-400">end</span>
-        <span class="text-cyan-400">else if</span> (clear_acc) <span class="text-cyan-400">begin</span> acc_val &lt;= 0; acc_null &lt;= 1'b1; acc_ovf &lt;= 1'b0; <span class="text-cyan-400">end</span>
-        <span class="text-cyan-400">else if</span> (!syn_null) <span class="text-cyan-400">begin</span>                      <span class="text-slate-500">// clock enable: update on active synapse only</span>
-            acc_val  &lt;= acc_sum;
-            acc_null &lt;= 1'b0;
-            acc_ovf  &lt;= acc_ovf | add_ovf;
-        <span class="text-cyan-400">end</span>                                           <span class="text-slate-500">// else: registers hold</span>
-    <span class="text-cyan-400">end</span>
-<span class="text-cyan-400">endmodule</span></pre>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- TAB 05: IN-BROWSER CONSISTENCY CHECKS                                     -->
-        <!-- ========================================================================= -->
-        <section id="tab-tests" class="tab-panel hidden space-y-6">
-            <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-cyan-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <span class="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">Tab 05 &bull; In-Browser Consistency Checks</span>
-                    <h2 class="text-lg font-bold text-white mt-0.5">Operator consistency checks &bull; <span id="pytest-time-label" class="font-mono text-slate-400 text-sm">not run yet</span></h2>
-                    <p class="text-xs text-slate-300 mt-1">
-                        Runs 12 checks of this page's JavaScript operator port against the definitions of the algebra. They do not execute the Python package or the RTL: use <code class="font-mono">pytest</code> and the Verilog testbenches for that.
-                    </p>
-                </div>
-                <button onclick="runAllUnitTests()" class="text-xs font-mono px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition shrink-0">
-                    ▶ Run all checks
-                </button>
-            </div>
-
-            <!-- Test Results List -->
-            <div id="test-results-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <!-- Populated by JS -->
-            </div>
-        </section>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="border-t border-slate-800/80 bg-slate-950/90 py-4 mt-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2">
-            <div>
-                <strong>rnull-framework: Causal Transparency Algebra (<span class="font-mono text-cyan-400">ℝ∅</span>) (v1.1.0)</strong> &bull; Author: Hakim Guettal &bull; Illustrative simulator: logic runs offline, styling loads Tailwind CSS and Google Fonts from their CDNs
-            </div>
-            <div class="font-mono text-[11px] flex items-center gap-3">
-                <a href="https://github.com/GuettHM/rnull-framework" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 transition">GitHub: GuettHM/rnull-framework</a>
-                <span>|</span>
-                <a href="https://doi.org/10.5281/zenodo.24215450" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 transition">Zenodo DOI: 10.5281/zenodo.24215450</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ========================================================================= -->
-    <!-- JAVASCRIPT PORT OF THE R_NULL OPERATORS (reference: rnull/tensor.py)          -->
-    <!-- ========================================================================= -->
-    <script>
-        /**
-         * RNullScalar: JavaScript port of the scalar (v, m) operators.
-         * The Python package (rnull/) is the reference implementation.
-         */
-        class RNullScalar {
-            constructor(v = 0.0, is_null = false) {
-                this.v = Number(v);
-                this.m = Boolean(is_null);
-            }
-
-            // Extended Addition (⊕): Bi-Identity x ⊕ ∅ = x
-            add(other) {
-                const o = other instanceof RNullScalar ? other : new RNullScalar(other, false);
-                const vA = this.m ? 0.0 : this.v;
-                const vB = o.m ? 0.0 : o.v;
-                return new RNullScalar(vA + vB, this.m && o.m);
-            }
-
-            // Extended Subtraction (⊖): x ⊖ ∅ = x, ∅ ⊖ x = -x
-            sub(other) {
-                const o = other instanceof RNullScalar ? other : new RNullScalar(other, false);
-                const vA = this.m ? 0.0 : this.v;
-                const vB = o.m ? 0.0 : o.v;
-                return new RNullScalar(vA - vB, this.m && o.m);
-            }
-
-            // Extended Multiplicative Fusion (⊗): Bi-Identity x ⊗ ∅ = x
-            mul(other) {
-                const o = other instanceof RNullScalar ? other : new RNullScalar(other, false);
-                const vA = this.m ? 1.0 : this.v;
-                const vB = o.m ? 1.0 : o.v;
-                return new RNullScalar(vA * vB, this.m && o.m);
-            }
-
-            // Directed Synaptic Skip (▷): ∅ ▷ x = x (Skip-wire), W ▷ ∅ = ∅ (Abstention)
-            synapticSkip(x) {
-                const inp = x instanceof RNullScalar ? x : new RNullScalar(x, false);
-                const vW = this.m ? 1.0 : this.v;
-                const vX = inp.m ? 0.0 : inp.v;
-                return new RNullScalar(vW * vX, inp.m);
-            }
-
-            // Absorbing Synaptic Multiplication (⊙): Hardware MAC coupling (w.m | x.m)
-            synapticMul(x) {
-                const inp = x instanceof RNullScalar ? x : new RNullScalar(x, false);
-                const mOut = this.m || inp.m;
-                const vOut = mOut ? 0.0 : (this.v * inp.v);
-                return new RNullScalar(vOut, mOut);
-            }
-
-            // Branchless State Detector Polynomial: χ_∅(x) = ((1 ⊗ 0) ⊕ (1 ⊗ x)) ⊖ (1 ⊗ (0 ⊕ x))
-            chiNullSteps() {
-                const one = new RNullScalar(1.0, false);
-                const zero = new RNullScalar(0.0, false);
-                const t1_left = one.mul(zero);         // (1 ⊗ 0) = 0
-                const t1_right = one.mul(this);        // (1 ⊗ x)
-                const term1 = t1_left.add(t1_right);   // Term 1 = (1 ⊗ 0) ⊕ (1 ⊗ x)
-                const t2_inner = zero.add(this);       // (0 ⊕ x)
-                const term2 = one.mul(t2_inner);       // Term 2 = 1 ⊗ (0 ⊕ x)
-                const diff = term1.sub(term2);         // Term 1 ⊖ Term 2
-                return {
-                    t1_right,
-                    term1,
-                    t2_inner,
-                    term2,
-                    result: diff.v
-                };
-            }
-
-            formatDual() {
-                return `(${this.v.toFixed(2)}, ${this.m ? 'True' : 'False'})`;
-            }
-
-            formatSymbolic() {
-                return this.m ? '∅' : this.v.toFixed(2);
-            }
-        }
-
-        // =========================================================================
-        // NAVIGATION TABS LOGIC
-        // =========================================================================
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent';
-            });
-            const activeBtn = document.getElementById('btn-' + tabId);
-            if (activeBtn) {
-                activeBtn.className = 'tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 bg-cyan-500/15 text-cyan-300 border border-cyan-500/40';
-            }
-        }
-
-        // =========================================================================
-        // TAB 01 STATE & RENDERING
-        // =========================================================================
-        const stateAlgebra = {
-            a: new RNullScalar(5.0, false),
-            b: new RNullScalar(3.0, true)
-        };
-
-        function setOperandNull(op, isNull) {
-            stateAlgebra[op].m = isNull;
-            updateAlgebraUI();
-        }
-
-        function setOperandValue(op, val) {
-            stateAlgebra[op].v = Number(val);
-            stateAlgebra[op].m = false;
-            document.getElementById('num-' + op).value = stateAlgebra[op].v;
-            document.getElementById('range-' + op).value = stateAlgebra[op].v;
-            updateAlgebraUI();
-        }
-
-        function syncOperandFromRange(op, val) {
-            stateAlgebra[op].v = Number(val);
-            document.getElementById('num-' + op).value = val;
-            updateAlgebraUI();
-        }
-
-        function syncOperandFromInput(op, val) {
-            const parsed = parseFloat(val);
-            if (!isNaN(parsed)) {
-                stateAlgebra[op].v = parsed;
-                document.getElementById('range-' + op).value = Math.max(-10, Math.min(10, parsed));
-                updateAlgebraUI();
-            }
-        }
-
-        function setAlgebraPreset(vA, mA, vB, mB) {
-            stateAlgebra.a = new RNullScalar(vA, mA);
-            stateAlgebra.b = new RNullScalar(vB, mB);
-            document.getElementById('num-a').value = vA;
-            document.getElementById('range-a').value = vA;
-            document.getElementById('num-b').value = vB;
-            document.getElementById('range-b').value = vB;
-            updateAlgebraUI();
-        }
-
-        function updateAlgebraUI() {
-            const { a, b } = stateAlgebra;
-
-            // Update Operand A Controls
-            const badgeA = document.getElementById('badge-op-a');
-            badgeA.textContent = a.m ? '∅ (NULL)' : a.v.toFixed(2);
-            badgeA.className = a.m
-                ? 'mono-badge text-sm px-3 py-1 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold'
-                : 'mono-badge text-sm px-3 py-1 rounded-lg bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 font-bold';
-
-            document.getElementById('btn-a-real').className = !a.m
-                ? 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold bg-cyan-500 text-slate-950 transition'
-                : 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold text-slate-400 hover:text-white transition';
-            document.getElementById('btn-a-null').className = a.m
-                ? 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold bg-amber-500 text-slate-950 transition'
-                : 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold text-slate-400 hover:text-white transition';
-            document.getElementById('slider-wrap-a').className = a.m ? 'space-y-2 transition-opacity opacity-40' : 'space-y-2 transition-opacity';
-
-            // Update Operand B Controls
-            const badgeB = document.getElementById('badge-op-b');
-            badgeB.textContent = b.m ? '∅ (NULL)' : b.v.toFixed(2);
-            badgeB.className = b.m
-                ? 'mono-badge text-sm px-3 py-1 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold'
-                : 'mono-badge text-sm px-3 py-1 rounded-lg bg-violet-500/15 border border-violet-500/40 text-violet-300 font-bold';
-
-            document.getElementById('btn-b-real').className = !b.m
-                ? 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold bg-violet-500 text-slate-950 transition'
-                : 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold text-slate-400 hover:text-white transition';
-            document.getElementById('btn-b-null').className = b.m
-                ? 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold bg-amber-500 text-slate-950 transition'
-                : 'px-3 py-1.5 rounded-md text-xs font-mono font-semibold text-slate-400 hover:text-white transition';
-            document.getElementById('slider-wrap-b').className = b.m ? 'space-y-2 transition-opacity opacity-40' : 'space-y-2 transition-opacity';
-
-            // Evaluate all 4 Operators
-            const resAdd = a.add(b);
-            const resMul = a.mul(b);
-            const resSkip = a.synapticSkip(b);
-            const resMac = a.synapticMul(b);
-
-            document.getElementById('op-add-dual').textContent = resAdd.formatDual();
-            document.getElementById('op-add-res').textContent = resAdd.formatSymbolic();
-            document.getElementById('op-add-res').className = `text-base font-bold ${resAdd.m ? 'text-amber-300' : 'text-cyan-300'}`;
-
-            document.getElementById('op-mul-dual').textContent = resMul.formatDual();
-            document.getElementById('op-mul-res').textContent = resMul.formatSymbolic();
-            document.getElementById('op-mul-res').className = `text-base font-bold ${resMul.m ? 'text-amber-300' : 'text-emerald-300'}`;
-
-            document.getElementById('op-skip-dual').textContent = resSkip.formatDual();
-            document.getElementById('op-skip-res').textContent = resSkip.formatSymbolic();
-            document.getElementById('op-skip-res').className = `text-base font-bold ${resSkip.m ? 'text-amber-300' : 'text-violet-300'}`;
-
-            document.getElementById('op-mac-dual').textContent = resMac.formatDual();
-            document.getElementById('op-mac-res').textContent = resMac.formatSymbolic();
-            document.getElementById('op-mac-res').className = `text-base font-bold ${resMac.m ? 'text-amber-300' : 'text-emerald-300'}`;
-
-            // Update Chi_null Polynomial Inspector for A and B
-            renderChiInspector('a', a);
-            renderChiInspector('b', b);
-        }
-
-        function renderChiInspector(prefix, tensor) {
-            const steps = tensor.chiNullSteps();
-            const sym = tensor.formatSymbolic();
-            const badge = document.getElementById(`chi-${prefix}-badge`);
-            badge.textContent = `χ_∅(${sym}) = ${steps.result.toFixed(0)}`;
-            badge.className = steps.result === 1
-                ? 'mono-badge text-xs px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold'
-                : 'mono-badge text-xs px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
-
-            document.getElementById(`chi-${prefix}-steps`).innerHTML = `
-                <div>1. <span class="text-slate-400">Term 1 = (1 ⊗ 0) ⊕ (1 ⊗ ${sym}) = 0 ⊕ ${steps.t1_right.v.toFixed(2)} =</span> <strong class="text-cyan-300">${steps.term1.v.toFixed(2)}</strong></div>
-                <div>2. <span class="text-slate-400">Term 2 = 1 ⊗ (0 ⊕ ${sym}) = 1 ⊗ ${steps.t2_inner.v.toFixed(2)} =</span> <strong class="text-violet-300">${steps.term2.v.toFixed(2)}</strong></div>
-                <div class="pt-1 border-t border-slate-800">3. <span class="text-slate-400">χ_∅(${sym}) = Term 1 ⊖ Term 2 = ${steps.term1.v.toFixed(2)} - ${steps.term2.v.toFixed(2)} =</span> <strong class="${steps.result === 1 ? 'text-amber-300' : 'text-emerald-300'}">${steps.result.toFixed(1)}</strong> <span class="text-slate-500">(matches m=${tensor.m})</span></div>
-            `;
-        }
-
-        // =========================================================================
-        // TAB 02: PRODUCT FUSION & MISSING INPUTS
-        // =========================================================================
-        const stateFusion = {
-            cam: { v: 2.0, mode: 'real' },
-            lidar: { v: 3.0, mode: 'null' },
-            radar: { v: 4.0, mode: 'real' },
-            bias: 2.5
-        };
-
-        function setSensorMode(sensor, mode) {
-            stateFusion[sensor].mode = mode;
-            updateFusionUI();
-        }
-
-        function setSensorValue(sensor, val) {
-            stateFusion[sensor].v = parseFloat(val);
-            document.getElementById(`${sensor}-val-label`).textContent = stateFusion[sensor].v.toFixed(2);
-            if (stateFusion[sensor].mode !== 'real') {
-                stateFusion[sensor].mode = 'real';
-            }
-            updateFusionUI();
-        }
-
-        function setFusionScenario(scenario) {
-            if (scenario === 'nominal') {
-                stateFusion.cam = { v: 2.0, mode: 'real' };
-                stateFusion.lidar = { v: 3.0, mode: 'real' };
-                stateFusion.radar = { v: 4.0, mode: 'real' };
-            } else if (scenario === 'lidar_null') {
-                stateFusion.cam = { v: 2.0, mode: 'real' };
-                stateFusion.lidar = { v: 3.0, mode: 'null' };
-                stateFusion.radar = { v: 4.0, mode: 'real' };
-            } else if (scenario === 'all_null') {
-                stateFusion.cam = { v: 2.0, mode: 'null' };
-                stateFusion.lidar = { v: 3.0, mode: 'null' };
-                stateFusion.radar = { v: 4.0, mode: 'null' };
-            }
-            ['cam', 'lidar', 'radar'].forEach(s => {
-                document.getElementById(`${s}-slider`).value = stateFusion[s].v;
-                document.getElementById(`${s}-val-label`).textContent = stateFusion[s].v.toFixed(2);
-            });
-            updateFusionUI();
-        }
-
-        function updateFusionUI() {
-            const sensors = ['cam', 'lidar', 'radar'];
-            sensors.forEach(s => {
-                const { v, mode } = stateFusion[s];
-                const badge = document.getElementById(`fusion-${s}-badge`);
-                if (mode === 'real') {
-                    badge.textContent = v.toFixed(2);
-                    badge.className = 'mono-badge text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300';
-                } else {
-                    badge.textContent = '∅ (OFFLINE)';
-                    badge.className = 'mono-badge text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300';
-                }
-
-                ['real', 'null'].forEach(m => {
-                    const btn = document.getElementById(`${s}-mode-${m}`);
-                    if (mode === m) {
-                        btn.className = m === 'null'
-                            ? 'py-1.5 rounded bg-amber-500 text-slate-950 font-bold'
-                            : 'py-1.5 rounded bg-cyan-500 text-slate-950 font-bold';
-                    } else {
-                        btn.className = 'py-1.5 rounded text-slate-400 hover:text-white';
-                    }
-                });
-            });
-
-            const b = stateFusion.bias;
-
-            // 1. Classical Real Arithmetic (imputes missing ∅ as 0.0)
-            const cVals = sensors.map(s => stateFusion[s].mode === 'real' ? stateFusion[s].v : 0.0);
-            const cProd = cVals[0] * cVals[1] * cVals[2];
-            const cOut = cProd + b;
-            document.getElementById('eq-classic').textContent = `y = (${cVals[0].toFixed(1)} × ${cVals[1].toFixed(1)} × ${cVals[2].toFixed(1)}) + ${b.toFixed(2)}`;
-            const anyNull = sensors.some(s => stateFusion[s].mode !== 'real');
-            const allNull = sensors.every(s => stateFusion[s].mode !== 'real');
-
-            if (allNull) {
-                document.getElementById('status-classic').textContent = 'BIAS-ONLY OUTPUT';
-                document.getElementById('status-classic').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40';
-                document.getElementById('out-classic').textContent = `Output: +${cOut.toFixed(2)} (bias only)`;
-                document.getElementById('out-classic').className = 'text-base font-bold text-rose-400 pt-1';
-            } else if (anyNull) {
-                document.getElementById('status-classic').textContent = 'ZERO COLLAPSE';
-                document.getElementById('status-classic').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40';
-                document.getElementById('out-classic').textContent = `Output: +${cOut.toFixed(2)} (live sensors zeroed)`;
-                document.getElementById('out-classic').className = 'text-base font-bold text-rose-400 pt-1';
-            } else {
-                document.getElementById('status-classic').textContent = 'NOMINAL';
-                document.getElementById('status-classic').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-                document.getElementById('out-classic').textContent = `Output: ${cOut.toFixed(2)}`;
-                document.getElementById('out-classic').className = 'text-base font-bold text-emerald-400 pt-1';
-            }
-
-            // 2. IEEE-754 NaN Propagation
-            const nSym = sensors.map(s => stateFusion[s].mode === 'real' ? stateFusion[s].v.toFixed(1) : 'NaN');
-            document.getElementById('eq-nan').textContent = `y = (${nSym[0]} × ${nSym[1]} × ${nSym[2]}) + ${b.toFixed(2)}`;
-            if (anyNull) {
-                document.getElementById('status-nan').textContent = 'NaN PROPAGATES';
-                document.getElementById('out-nan').textContent = 'Output: NaN';
-                document.getElementById('out-nan').className = 'text-base font-bold text-rose-400 pt-1';
-            } else {
-                document.getElementById('status-nan').textContent = 'NOMINAL';
-                document.getElementById('out-nan').textContent = `Output: ${cOut.toFixed(2)}`;
-                document.getElementById('out-nan').className = 'text-base font-bold text-emerald-400 pt-1';
-            }
-
-            // 3. R_null product fusion; bias suppressed when every factor is null
-            const rTensors = sensors.map(s => new RNullScalar(stateFusion[s].v, stateFusion[s].mode !== 'real'));
-            const fused = rTensors[0].mul(rTensors[1]).mul(rTensors[2]);
-            const rSym = rTensors.map(t => t.m ? '∅' : t.v.toFixed(1));
-            const presentCount = rTensors.filter(t => !t.m).length;
-
-            if (fused.m) {
-                document.getElementById('status-rnull').textContent = 'ALL INPUTS MISSING: ABSTAIN';
-                document.getElementById('status-rnull').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold';
-                document.getElementById('eq-rnull').textContent = `y = (${rSym[0]} ⊗ ${rSym[1]} ⊗ ${rSym[2]}) ↦ Bias Gated`;
-                document.getElementById('out-rnull').textContent = 'Output: Y = ∅ (0/3 sensors present)';
-                document.getElementById('out-rnull').className = 'text-base font-bold text-amber-300 pt-1';
-            } else {
-                const finalVal = fused.v + b;
-                document.getElementById('status-rnull').textContent = anyNull ? 'NULL FACTOR SKIPPED' : 'NOMINAL FUSION';
-                document.getElementById('status-rnull').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
-                document.getElementById('eq-rnull').textContent = `y = (${rSym[0]} ⊗ ${rSym[1]} ⊗ ${rSym[2]}) + ${b.toFixed(2)} = ${fused.v.toFixed(2)} + ${b.toFixed(2)}`;
-                document.getElementById('out-rnull').textContent = `Output: ${finalVal.toFixed(2)} (m = False, ${presentCount}/3 sensors present)`;
-                document.getElementById('out-rnull').className = 'text-base font-bold text-emerald-400 pt-1';
-            }
-        }
-
-        // =========================================================================
-        // TAB 03: DRIFT-FREE CONTINUAL LEARNING SIMULATOR
-        // =========================================================================
-        const initialWeights = [1.80, -1.40, 2.20, -0.95, 1.35, -1.75, 0.60, -0.80];
-        const frozenMask =     [true,  true,  true,  true,  true,  true,  false, false];
-        let clSteps = 0;
-        let weightsStd = [...initialWeights];
-        let weightsRnull = [...initialWeights];
-        // AdamW state left over from earlier training (first/second moment estimates).
-        const BETA1 = 0.9, BETA2 = 0.999, ADAM_EPS = 1e-8;
-        const initialM = [0.40, -0.30, 0.50, -0.20, 0.35, -0.45, 0.0, 0.0];
-        let adamM = [...initialM];
-        let adamV = initialWeights.map(() => 1.0);
-
-        function stepContinualLearning(numSteps) {
-            const lambda = parseFloat(document.getElementById('cl-lambda').value);
-            const lr = parseFloat(document.getElementById('cl-lr').value);
-
-            for (let s = 0; s < numSteps; s++) {
-                clSteps++;
-                for (let i = 0; i < initialWeights.length; i++) {
-                    if (frozenMask[i]) {
-                        // Frozen weight under AdamW with zero gradient: the moment estimates
-                        // decay and decoupled weight decay keeps acting (bias correction ~ 1
-                        // after warm-up, so it is omitted here).
-                        adamM[i] = BETA1 * adamM[i];
-                        adamV[i] = BETA2 * adamV[i];
-                        const driftDelta = -lr * lambda * weightsStd[i] - lr * adamM[i] / (Math.sqrt(adamV[i]) + ADAM_EPS);
-                        weightsStd[i] = weightsStd[i] + driftDelta;
-
-                        // R_null Continual Learning Step: ΔW = ∅ on frozen weights -> W(t+1) = W(t) ⊕ ∅ = W(t)
-                        const wTensor = new RNullScalar(weightsRnull[i], false);
-                        const deltaNull = new RNullScalar(driftDelta, true); // is_null = True (∅)
-                        weightsRnull[i] = wTensor.add(deltaNull).v;
-                    } else {
-                        // Plastic Task-B weight: updates normally in both
-                        const taskBGrad = 0.025 * Math.cos(clSteps * 0.2 + i);
-                        weightsStd[i] += taskBGrad;
-                        weightsRnull[i] += taskBGrad;
-                    }
-                }
-            }
-            renderContinualLearning();
-        }
-
-        function resetContinualLearning() {
-            clSteps = 0;
-            weightsStd = [...initialWeights];
-            weightsRnull = [...initialWeights];
-            adamM = [...initialM];
-            adamV = initialWeights.map(() => 1.0);
-            renderContinualLearning();
-        }
-
-        function renderContinualLearning() {
-            document.getElementById('cl-step-count').textContent = `t = ${clSteps}`;
-
-            let sumSqStd = 0.0;
-            let sumSqRnull = 0.0;
-            let frozenCount = 0;
-
-            for (let i = 0; i < initialWeights.length; i++) {
-                if (frozenMask[i]) {
-                    sumSqStd += Math.pow(weightsStd[i] - initialWeights[i], 2);
-                    sumSqRnull += Math.pow(weightsRnull[i] - initialWeights[i], 2);
-                    frozenCount++;
-                }
-            }
-
-            const mseStd = sumSqStd / frozenCount;
-            const mseRnull = sumSqRnull / frozenCount;
-
-            document.getElementById('cl-mse-std').textContent = mseStd.toFixed(10);
-            document.getElementById('cl-mse-rnull').textContent = `${mseRnull.toFixed(10)}${mseRnull === 0 ? ' (unchanged)' : ''}`;
-
-            const container = document.getElementById('cl-weights-grid');
-            container.innerHTML = initialWeights.map((w0, idx) => {
-                const isFrozen = frozenMask[idx];
-                const wS = weightsStd[idx];
-                const wR = weightsRnull[idx];
-                const errS = Math.abs(wS - w0);
-
-                return `
-                    <div class="bg-slate-900/90 rounded-xl p-3.5 border ${isFrozen ? 'border-slate-800' : 'border-cyan-500/30'} space-y-2 font-mono text-xs">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-white">W[${idx}]</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] ${isFrozen ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'bg-cyan-500/20 text-cyan-300'}">
-                                ${isFrozen ? '🔒 FROZEN Task-A (ΔW=∅)' : '🔓 PLASTIC Task-B'}
-                            </span>
-                        </div>
-                        <div class="text-[11px] text-slate-400 flex justify-between">
-                            <span>Initial W(t=0):</span>
-                            <span class="text-slate-200">${w0.toFixed(4)}</span>
-                        </div>
-                        <div class="text-[11px] flex justify-between">
-                            <span class="text-rose-300">Standard AdamW:</span>
-                            <span class="${isFrozen && errS > 1e-6 ? 'text-rose-400 font-bold' : 'text-slate-300'}">${wS.toFixed(4)}</span>
-                        </div>
-                        <div class="text-[11px] flex justify-between">
-                            <span class="text-emerald-300">ℝ_∅ Protected:</span>
-                            <span class="text-emerald-400 font-bold">${wR.toFixed(4)}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // =========================================================================
-        // TAB 04: TAGGED MAC CELL (BEHAVIOURAL MODEL)
-        // =========================================================================
-        const stateRtl = {
-            wVal: 2.5,
-            wNull: false,
-            xVal: 4.0,
-            xNull: true,
-            accVal: 0.0,
-            accNull: true,
-            totalCycles: 0,
-            bypassedCycles: 0
-        };
-
-        function toggleRtlPin(pin) {
-            if (pin === 'w') {
-                stateRtl.wNull = !stateRtl.wNull;
-            } else {
-                stateRtl.xNull = !stateRtl.xNull;
-            }
-            updateRtlPreview();
-        }
-
-        function updateRtlPreview() {
-            stateRtl.wVal = parseFloat(document.getElementById('rtl-w-val').value);
-            stateRtl.xVal = parseFloat(document.getElementById('rtl-x-val').value);
-
-            document.getElementById('rtl-w-label').textContent = stateRtl.wVal.toFixed(2);
-            document.getElementById('rtl-x-label').textContent = stateRtl.xVal.toFixed(2);
-
-            const wBtn = document.getElementById('rtl-w-null-btn');
-            wBtn.textContent = stateRtl.wNull ? "w_null = 1'b1 (∅ Bypass)" : "w_null = 1'b0 (Active)";
-            wBtn.className = stateRtl.wNull
-                ? 'mono-badge text-xs px-2.5 py-1 rounded bg-amber-500 text-slate-950 font-bold'
-                : 'mono-badge text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-600';
-
-            const xBtn = document.getElementById('rtl-x-null-btn');
-            xBtn.textContent = stateRtl.xNull ? "x_null = 1'b1 (∅ Bypass)" : "x_null = 1'b0 (Active)";
-            xBtn.className = stateRtl.xNull
-                ? 'mono-badge text-xs px-2.5 py-1 rounded bg-amber-500 text-slate-950 font-bold'
-                : 'mono-badge text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-600';
-
-            const synNull = stateRtl.wNull || stateRtl.xNull;
-            const gatedW = synNull ? 0.0 : stateRtl.wVal;
-            const gatedX = synNull ? 0.0 : stateRtl.xVal;
-            const prod = gatedW * gatedX;
-
-            document.getElementById('sig-syn-null').textContent = synNull ? "1'b1 (∅ BYPASS)" : "1'b0 (ACTIVE)";
-            document.getElementById('sig-syn-null').className = synNull ? 'text-base font-bold text-amber-400 mt-1' : 'text-base font-bold text-cyan-300 mt-1';
-
-            document.getElementById('sig-gated-wx').textContent = `${gatedW.toFixed(2)} / ${gatedX.toFixed(2)}`;
-            document.getElementById('sig-prod').textContent = synNull ? 'ISOLATED (operands = 0)' : prod.toFixed(2);
-
-            const gateBadge = document.getElementById('rtl-gate-status');
-            if (synNull) {
-                gateBadge.textContent = '∅-BYPASS ACTIVE (syn_null = 1)';
-                gateBadge.className = 'mono-badge text-xs px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
-            } else {
-                gateBadge.textContent = 'ACTIVE MAC CYCLE (syn_null = 0)';
-                gateBadge.className = 'mono-badge text-xs px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold';
-            }
-
-            document.getElementById('sig-acc-val').textContent = stateRtl.accVal.toFixed(2);
-            document.getElementById('sig-acc-null').textContent = stateRtl.accNull ? "1'b1 (∅)" : "1'b0 (Valid)";
-
-            const pct = stateRtl.totalCycles > 0 ? ((stateRtl.bypassedCycles / stateRtl.totalCycles) * 100).toFixed(1) : '0.0';
-            document.getElementById('sig-bypass-ratio').textContent = `${stateRtl.bypassedCycles} / ${stateRtl.totalCycles} (${pct}%)`;
-        }
-
-        function clockRtlStep() {
-            const synNull = stateRtl.wNull || stateRtl.xNull;
-            stateRtl.totalCycles++;
-            if (synNull) {
-                stateRtl.bypassedCycles++;
-            } else {
-                const prod = stateRtl.wVal * stateRtl.xVal;
-                stateRtl.accVal = stateRtl.accNull ? prod : (stateRtl.accVal + prod);
-                stateRtl.accNull = false;
-            }
-            updateRtlPreview();
-        }
-
-        function runRtlBenchmark() {
-            const sparsity = parseFloat(document.getElementById('rtl-sparsity').value) / 100.0;
-            for (let i = 0; i < 1000; i++) {
-                // weight and input are null independently; the synapse is skipped if either is
-                const isNullCycle = (Math.random() < sparsity) || (Math.random() < sparsity);
-                stateRtl.totalCycles++;
-                if (isNullCycle) {
-                    stateRtl.bypassedCycles++;
-                } else {
-                    const randW = (Math.random() - 0.5) * 2.0;
-                    const randX = (Math.random() - 0.5) * 2.0;
-                    const prod = randW * randX;
-                    stateRtl.accVal = stateRtl.accNull ? prod : (stateRtl.accVal + prod);
-                    stateRtl.accNull = false;
-                }
-            }
-            updateRtlPreview();
-        }
-
-        function resetRtlAccumulator() {
-            stateRtl.accVal = 0.0;
-            stateRtl.accNull = true;
-            stateRtl.totalCycles = 0;
-            stateRtl.bypassedCycles = 0;
-            updateRtlPreview();
-        }
-
-        // =========================================================================
-        // TAB 05: IN-BROWSER CONSISTENCY CHECKS
-        // =========================================================================
-        function runAllUnitTests() {
-            const tStart = performance.now();
-            const tests = [
-                {
-                    name: 'test_axiom1_additive_bi_identity',
-                    desc: 'Verifies bilateral additive neutrality: x ⊕ ∅ == x and ∅ ⊕ x == x',
-                    run: () => {
-                        const x = new RNullScalar(7.25, false);
-                        const nul = new RNullScalar(99.0, true);
-                        const r1 = x.add(nul);
-                        const r2 = nul.add(x);
-                        return r1.v === 7.25 && !r1.m && r2.v === 7.25 && !r2.m;
-                    },
-                    detail: '(7.25, False) ⊕ (99.0, True) == (7.25, False)'
-                },
-                {
-                    name: 'test_axiom1_multiplicative_bi_identity',
-                    desc: 'Verifies bilateral multiplicative neutrality: x ⊗ ∅ == x and ∅ ⊗ x == x',
-                    run: () => {
-                        const x = new RNullScalar(-4.5, false);
-                        const nul = new RNullScalar(123.0, true);
-                        const r1 = x.mul(nul);
-                        const r2 = nul.mul(x);
-                        return r1.v === -4.5 && !r1.m && r2.v === -4.5 && !r2.m;
-                    },
-                    detail: '(-4.50, False) ⊗ (123.0, True) == (-4.50, False)'
-                },
-                {
-                    name: 'test_total_abstention_closure',
-                    desc: 'Verifies algebraic closure under abstention: ∅ ⊕ ∅ == ∅ and ∅ ⊗ ∅ == ∅',
-                    run: () => {
-                        const n1 = new RNullScalar(0.0, true);
-                        const n2 = new RNullScalar(5.0, true);
-                        return n1.add(n2).m === true && n1.mul(n2).m === true;
-                    },
-                    detail: '∅ ⊕ ∅ == ∅ (m=True) ∧ ∅ ⊗ ∅ == ∅ (m=True)'
-                },
-                {
-                    name: 'test_measured_zero_vs_abstention',
-                    desc: 'Verifies that measured zero 0.0 ∈ ℝ is strictly distinct from ∅ (0.0 ⊕ ∅ == 0.0, 0.0 ⊗ ∅ == 0.0)',
-                    run: () => {
-                        const z = new RNullScalar(0.0, false);
-                        const nul = new RNullScalar(0.0, true);
-                        const sum = z.add(nul);
-                        const prod = z.mul(nul);
-                        return sum.v === 0.0 && !sum.m && prod.v === 0.0 && !prod.m;
-                    },
-                    detail: '0.0 ⊕ ∅ == (0.0, False) ∧ 0.0 ⊗ ∅ == (0.0, False)'
-                },
-                {
-                    name: 'test_chi_null_detector_on_zero_and_reals',
-                    desc: 'Verifies exact polynomial evaluation χ_∅(0.0) == 0 and χ_∅(x) == 0 for all x ∈ ℝ',
-                    run: () => {
-                        const vals = [0.0, 5.0, -3.2];
-                        return vals.every(v => new RNullScalar(v, false).chiNullSteps().result === 0.0);
-                    },
-                    detail: 'χ_∅(0.0) == 0.0, χ_∅(5.0) == 0.0, χ_∅(-3.2) == 0.0'
-                },
-                {
-                    name: 'test_chi_null_detector_on_abstention',
-                    desc: 'Verifies exact polynomial evaluation χ_∅(∅) == 1 regardless of hidden float payload',
-                    run: () => {
-                        const n1 = new RNullScalar(0.0, true);
-                        const n2 = new RNullScalar(42.0, true);
-                        return n1.chiNullSteps().result === 1.0 && n2.chiNullSteps().result === 1.0;
-                    },
-                    detail: '((1⊗0) ⊕ (1⊗∅)) ⊖ (1⊗(0⊕∅)) = (0 ⊕ 1) ⊖ (1 ⊗ 0) == 1.0'
-                },
-                {
-                    name: 'test_directed_synaptic_skip_wire',
-                    desc: 'Verifies the directed coupling: ∅ ▷ x == x when W=∅ and x ∈ ℝ',
-                    run: () => {
-                        const wNull = new RNullScalar(0.0, true);
-                        const xReal = new RNullScalar(6.5, false);
-                        const res = wNull.synapticSkip(xReal);
-                        return res.v === 6.5 && res.m === false;
-                    },
-                    detail: 'W=∅ ▷ x=6.5 ⟹ (6.5, False) [input passed through; the weight acts as 1]'
-                },
-                {
-                    name: 'test_directed_synaptic_abstention',
-                    desc: 'Verifies the directed coupling: W ▷ ∅ == ∅ when x=∅',
-                    run: () => {
-                        const wReal = new RNullScalar(4.0, false);
-                        const xNull = new RNullScalar(0.0, true);
-                        const res = wReal.synapticSkip(xNull);
-                        return res.m === true;
-                    },
-                    detail: 'W=4.0 ▷ x=∅ ⟹ ∅ (m=True) [null input gives null]'
-                },
-                {
-                    name: 'test_multimodal_lidar_dropout_resilience',
-                    desc: 'Verifies S_cam ⊗ S_lidar ⊗ S_radar with S_lidar = ∅ preserves active channels without zero-collapse',
-                    run: () => {
-                        const cam = new RNullScalar(2.0, false);
-                        const lidar = new RNullScalar(999.0, true);
-                        const radar = new RNullScalar(4.0, false);
-                        const out = cam.mul(lidar).mul(radar);
-                        return out.v === 8.0 && !out.m;
-                    },
-                    detail: '2.0 ⊗ ∅ ⊗ 4.0 == 8.0 (m=False)'
-                },
-                {
-                    name: 'test_all_null_product_is_null',
-                    desc: 'Verifies that a product whose factors are all null is null',
-                    run: () => {
-                        const s1 = new RNullScalar(2.0, true);
-                        const s2 = new RNullScalar(3.0, true);
-                        const s3 = new RNullScalar(4.0, true);
-                        const fused = s1.mul(s2).mul(s3);
-                        return fused.m === true;
-                    },
-                    detail: '∅ ⊗ ∅ ⊗ ∅ == ∅ (m=True)'
-                },
-                {
-                    name: 'test_continual_learning_zero_drift_mse',
-                    desc: 'Verifies protected parameter update W(t+1) = W(t) ⊕ ΔW with ΔW = ∅ yields exact MSE == 0.0',
-                    run: () => {
-                        const w0 = new RNullScalar(1.85, false);
-                        const fakeAdamStep = new RNullScalar(-0.085, true);
-                        const wNext = w0.add(fakeAdamStep);
-                        const mse = Math.pow(wNext.v - w0.v, 2);
-                        return mse === 0.0 && !wNext.m;
-                    },
-                    detail: 'W(t) ⊕ ∅ == W(t) ⟹ MSE == 0.0000000000'
-                },
-                {
-                    name: 'test_mac_model_absorbing_bypass',
-                    desc: 'Verifies the absorbing coupling W ⊙ ∅ == ∅ and that the accumulator is unchanged: Acc ⊕ ∅ == Acc',
-                    run: () => {
-                        const acc = new RNullScalar(12.0, false);
-                        const w = new RNullScalar(3.0, false);
-                        const x = new RNullScalar(5.0, true);
-                        const syn = w.synapticMul(x);
-                        const accNext = acc.add(syn);
-                        return syn.m === true && accNext.v === 12.0 && !accNext.m;
-                    },
-                    detail: 'Acc_t = 12.0 ⊕ (3.0 ⊙ ∅) = 12.0 ⊕ ∅ == 12.0 (held)'
-                }
-            ];
-
-            let passedCount = 0;
-            const container = document.getElementById('test-results-container');
-            container.innerHTML = tests.map((t, idx) => {
-                const ok = t.run();
-                if (ok) passedCount++;
-                return `
-                    <div class="glass-panel rounded-xl p-4 border ${ok ? 'border-emerald-500/30' : 'border-rose-500/40'} flex flex-col justify-between space-y-2">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="font-mono text-xs font-bold text-white">
-                                <span class="text-slate-500">#${String(idx + 1).padStart(2, '0')}</span> ${t.name}
-                            </div>
-                            <span class="mono-badge text-[11px] px-2 py-0.5 rounded font-bold ${ok ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300'}">
-                                ${ok ? 'PASSED ✓' : 'FAILED ✗'}
-                            </span>
-                        </div>
-                        <p class="text-xs text-slate-300">${t.desc}</p>
-                        <div class="bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 font-mono text-[11px] text-cyan-300">
-                            ${t.detail}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            const elapsedMs = (performance.now() - tStart).toFixed(2);
-            document.getElementById('pytest-time-label').textContent = `${passedCount}/${tests.length} Passed in ${elapsedMs} ms`;
-
-            const allOk = passedCount === tests.length;
-            document.getElementById('pytest-time-label').className =
-                'font-mono text-sm ' + (allOk ? 'text-emerald-400' : 'text-rose-400');
-            const globalBadge = document.getElementById('global-test-badge');
-            globalBadge.className = 'mono-badge text-xs px-3 py-1.5 rounded-lg flex items-center gap-2 border ' +
-                (allOk ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                       : 'bg-rose-500/10 border-rose-500/40 text-rose-300');
-            globalBadge.innerHTML = `
-                <span class="w-2 h-2 rounded-full ${allOk ? 'bg-emerald-400' : 'bg-rose-400'}"></span>
-                <span>${passedCount}/${tests.length} CONSISTENCY CHECKS ${allOk ? 'PASSED' : '— FAILURES'} (${elapsedMs} ms)</span>
-            `;
-        }
-
-        // =========================================================================
-        // SELF-DOWNLOAD FUNCTION FOR REPOSITORY INTEGRATION (dashboard/index.html)
-        // =========================================================================
-        function downloadDashboardFile() {
-            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'index.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Initialize all modules on page load
-        window.onload = function () {
-            updateAlgebraUI();
-            updateFusionUI();
-            renderContinualLearning();
-            updateRtlPreview();
-            runAllUnitTests();
-        };
-    </script>
+    wire syn_null = w_null | x_null;                 // skip if either operand is null
+    wire signed [WIDTH-1:0] gated_w = syn_null ? 0 : w_val;   // operand isolation
+    wire signed [WIDTH-1:0] gated_x = syn_null ? 0 : x_val;
+    // prod = gated_w * gated_x, sign-extended;  acc_sum = (acc_null ? 0 : acc_val) + prod
+
+    always @(posedge clk or negedge rst_n)
+        if (!rst_n || clear_acc) begin acc_val &lt;= 0; acc_null &lt;= 1; acc_ovf &lt;= 0; end
+        else if (!syn_null)      begin acc_val &lt;= acc_sum; acc_null &lt;= 0; acc_ovf &lt;= acc_ovf | add_ovf; end
+        // else: registers hold
+endmodule</pre>
+      </details>
+      <p class="note" style="margin-bottom:0">The share of skipped cycles is an activity figure. The cell has not been synthesised: there are no area, timing or power results.</p>
+    </div>
+  </section>
+
+  <!-- ============================ RESULTS ============================ -->
+  <section id="results">
+    <h2>Measured results</h2>
+    <p class="lede">Output of <code>benchmarks/run_benchmarks.py</code> and <code>benchmarks/missing_data.py</code> for v1.1.0 (NumPy reference, fixed seeds), as stored in <code>benchmarks/results/</code>.</p>
+
+    <h3>Skipped MAC operations</h3>
+    <p class="note">10⁶ synapses; weights and inputs are ∅ independently with rate p; 5 seeds.</p>
+    <div class="panel scroll"><table id="rs-mac"><thead><tr><th>p</th><th>Active (mean ± sd)</th><th>Skipped, measured</th><th>Skipped, 1 − (1 − p)²</th></tr></thead><tbody></tbody></table></div>
+
+    <h3>Drift of frozen weights under AdamW</h3>
+    <p class="note">10⁵ weights, 80% frozen, 500 steps after 50 warm-up steps; mean squared difference from the consolidated values.</p>
+    <div class="panel scroll"><table id="rs-drift"><thead><tr><th>Learning rate</th><th>Weight decay</th><th>Zero gradient only</th><th>Masked update</th><th>∅ gradient</th></tr></thead><tbody></tbody></table></div>
+
+    <h3>Output scale of a 64 → 32 layer</h3>
+    <p class="note">Standard deviation of the output relative to complete inputs, for independent standard-normal inputs.</p>
+    <div class="panel two">
+      <div>
+        <div class="legend" id="rs-scale-legend"></div>
+        <div class="chart" id="rs-scale-chart"></div>
+      </div>
+      <div class="scroll"><table id="rs-scale"><thead><tr><th>Missing</th><th>False</th><th>"mean"</th><th>"variance"</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <h3>Prediction with incomplete inputs</h3>
+    <p class="note">One-hidden-layer MLP; features removed completely at random at the same rate in training and test; mean ± sd over 5 seeds. "impute" is zero imputation of standardised inputs, identical to the layer with <code>normalize=False</code>; "impute + mask" appends the missingness indicators.</p>
+    <div class="panel scroll"><table id="rs-missing"><thead><tr><th>Dataset (metric)</th><th>Missing</th><th>impute</th><th>impute + mask</th><th>∅, "mean"</th><th>∅, "variance"</th></tr></thead><tbody></tbody></table></div>
+    <p class="note"><strong>Reading.</strong> The differences are within one standard deviation almost everywhere. On these problems null-aware rescaling does not improve on plain imputation, and the "mean" rescaling is clearly worse at high missing rates on the small regression set. The experiments are small, tabular and use completely-at-random missingness.</p>
+  </section>
+
+  <!-- ============================ CHECKS ============================ -->
+  <section id="checks">
+    <h2>Consistency checks</h2>
+    <p class="lede">These run in your browser, against this page's JavaScript port of the operators and of the MAC model. They do not execute the Python package or the RTL; <code>pytest</code> and the Verilog testbenches do that in the repository's CI.</p>
+    <div class="panel">
+      <ul class="checklist" id="ck-list"></ul>
+      <div class="presets"><button id="ck-run">Run the checks again</button></div>
+    </div>
+  </section>
+
+  <footer>
+    rnull-framework v1.1.0 by Hakim Guettal, MIT licence.
+    <a href="https://github.com/GuettHM/rnull-framework">Source</a>,
+    <a href="https://doi.org/10.5281/zenodo.24215450">DOI 10.5281/zenodo.24215450</a>,
+    <a href="https://github.com/GuettHM/rnull-framework/blob/main/paper/rnull_technical_note.pdf">technical note</a>.
+    This page has no external dependencies and works offline.
+  </footer>
+</main>
+</div>
+
+<script>
+"use strict";
+// <logic> ====================================================================
+// JavaScript port of the scalar operators (reference: rnull/tensor.py).
+class R {
+  constructor(v = 0, m = false) { this.m = Boolean(m); this.v = this.m ? 0 : Number(v); }
+  static of(x) { return x instanceof R ? x : new R(x, false); }
+  static get NULL() { return new R(0, true); }
+  add(o) { o = R.of(o); return new R(this.v + o.v, this.m && o.m); }
+  neg() { return new R(-this.v, this.m); }
+  sub(o) { return this.add(R.of(o).neg()); }
+  mul(o) { o = R.of(o); return new R((this.m ? 1 : this.v) * (o.m ? 1 : o.v), this.m && o.m); }
+  div(o) { o = R.of(o); const m = this.m || o.m; return new R(m ? 0 : this.v / o.v, m); }
+  odot(o) { o = R.of(o); return new R(this.v * o.v, this.m || o.m); }
+  skip(x) { x = R.of(x); return new R((this.m ? 1 : this.v) * x.v, x.m); }
+  chi() { return this.m ? 1 : 0; }
+  chiPoly() {
+    const one = new R(1), zero = new R(0);
+    return one.mul(zero).add(one.mul(this)).sub(one.mul(zero.add(this))).v;
+  }
+  eq(o, tol = 1e-12) {
+    o = R.of(o);
+    if (this.m !== o.m) return false;
+    if (this.m) return true;
+    if (Number.isNaN(this.v) && Number.isNaN(o.v)) return true;
+    return this.v === o.v || Math.abs(this.v - o.v) <= tol;
+  }
+}
+
+// Linear neuron y = sum_j (w_j (.) x_j) (+) b with optional rescaling.
+function neuron(x, w, b, mode) {
+  let sum = new R(0, true), k = 0;
+  for (let j = 0; j < x.length; j++) { const t = R.of(w[j]).odot(x[j]); if (!t.m) k++; sum = sum.add(t); }
+  const n = w.length;
+  if (sum.m) return { y: R.NULL, k, n, factor: 1 };
+  const exponent = mode === "mean" ? 1 : mode === "variance" ? 0.5 : 0;
+  const factor = Math.pow(n / k, exponent);
+  return { y: new R(sum.v * factor + b), k, n, factor };
+}
+
+// Bit-accurate model of hardware/rnull_mac.v (reference: rnull/hw_model.py).
+class MacModel {
+  constructor(width = 16, guard = 8) { this.width = width; this.guard = guard; this.accWidth = 2 * width + guard; this.reset(); }
+  reset() { this.acc = 0; this.accNull = true; this.ovf = false; this.cycles = 0; this.active = 0; }
+  clear() { this.acc = 0; this.accNull = true; this.ovf = false; this.cycles++; }
+  get lo() { return -Math.pow(2, this.width - 1); }
+  get hi() { return Math.pow(2, this.width - 1) - 1; }
+  wrap(value) {
+    const mod = Math.pow(2, this.accWidth), half = mod / 2;
+    return ((((value + half) % mod) + mod) % mod) - half;
+  }
+  step(w, wNull, x, xNull) {
+    this.cycles++;
+    if (wNull || xNull) return;
+    this.active++;
+    const exact = (this.accNull ? 0 : this.acc) + w * x;
+    const wrapped = this.wrap(exact);
+    this.ovf = this.ovf || wrapped !== exact;
+    this.acc = wrapped; this.accNull = false;
+  }
+}
+
+// AdamW applied to "frozen" weights whose gradient is zero. Returns the mean
+// squared drift after each step, for the plain rule and for a null update.
+const FZ_W0 = [1.8, -1.4, 2.2, -0.95, 1.35, -1.75];
+const FZ_M0 = [0.4, -0.3, 0.5, -0.2, 0.35, -0.45];
+function adamwDrift(lr, wd, steps) {
+  const b1 = 0.9, b2 = 0.999, eps = 1e-8;
+  const w = FZ_W0.slice(), m = FZ_M0.slice(), v = FZ_W0.map(() => 1);
+  const frozen = FZ_W0.map(x => new R(x));
+  const drift = [0], driftNull = [0];
+  for (let t = 1; t <= steps; t++) {
+    let s = 0, sNull = 0;
+    for (let i = 0; i < w.length; i++) {
+      m[i] *= b1; v[i] *= b2;                       // zero gradient: moments decay
+      w[i] += -lr * wd * w[i] - lr * m[i] / (Math.sqrt(v[i]) + eps);
+      frozen[i] = frozen[i].add(R.NULL);            // W (+) null = W
+      s += (w[i] - FZ_W0[i]) ** 2; sNull += (frozen[i].v - FZ_W0[i]) ** 2;
+    }
+    drift.push(s / w.length); driftNull.push(sNull / w.length);
+  }
+  const meanSq = FZ_W0.reduce((a, x) => a + x * x, 0) / FZ_W0.length;
+  const closedForm = (1 - Math.pow(1 - lr * wd, steps)) ** 2 * meanSq;
+  return { drift, driftNull, closedForm, final: w };
+}
+
+function runChecks() {
+  const N = R.NULL, reps = [N, new R(0), new R(1), new R(-1), new R(2), new R(-3.5), new R(0.25)];
+  const all3 = f => reps.every(a => reps.every(b => reps.every(c => f(a, b, c))));
+  const all2 = f => reps.every(a => reps.every(b => f(a, b)));
+  const all1 = f => reps.every(f);
+  const checks = [
+    ["∅ is the identity of ⊕, on both sides", all1(a => a.add(N).eq(a) && N.add(a).eq(a))],
+    ["∅ is the identity of ⊗, on both sides", all1(a => a.mul(N).eq(a) && N.mul(a).eq(a))],
+    ["A measured 0 is not ∅: 0 ⊕ ∅ = 0 and 0 ⊗ ∅ = 0", new R(0).add(N).eq(0) && new R(0).mul(N).eq(0)],
+    ["⊕ and ⊗ are commutative", all2((a, b) => a.add(b).eq(b.add(a)) && a.mul(b).eq(b.mul(a)))],
+    ["⊕ and ⊗ are associative", all3((a, b, c) => a.add(b).add(c).eq(a.add(b.add(c))) && a.mul(b).mul(c).eq(a.mul(b.mul(c))))],
+    ["No additive inverses: x ⊖ x = 0 for real x", [1, -2, 3.5].every(x => new R(x).sub(x).eq(0)) && N.sub(N).m],
+    ["Distributivity of ⊗ holds iff a is ∅, a = 0, or b and c are real",
+      all3((a, b, c) => a.mul(b.add(c)).eq(a.mul(b).add(a.mul(c))) === (a.m || a.v === 0 || (!b.m && !c.m)))],
+    ["Defect of ⊗: equals a when b or c is ∅, else 0",
+      all3((a, b, c) => a.m || a.mul(b).add(a.mul(c)).sub(a.mul(b.add(c))).eq((b.m || c.m) ? a.v : 0))],
+    ["χ∅ polynomial equals the mask on finite values", all1(a => a.chiPoly() === a.chi()) && new R(1e30).chiPoly() === 0],
+    ["χ∅ polynomial is NaN for an infinite real; the mask stays 0", Number.isNaN(new R(Infinity).chiPoly()) && new R(Infinity).chi() === 0],
+    ["⊘: ∅ if either side is ∅; real ÷ 0 follows IEEE-754", all1(a => a.div(N).m && N.div(a).m) && new R(1).div(0).v === Infinity && N.div(0).m],
+    ["⊙ is commutative, associative, with unit 1", all3((a, b, c) => a.odot(b).eq(b.odot(a)) && a.odot(b).odot(c).eq(a.odot(b.odot(c))) && new R(1).odot(a).eq(a))],
+    ["⊙ distributes over ⊕ and ∅ absorbs: a semiring", all3((a, b, c) => a.odot(b.add(c)).eq(a.odot(b).add(a.odot(c))) && N.odot(a).m)],
+    ["▷ is a monoid action: (a ⊗ b) ▷ c = a ▷ (b ▷ c), ∅ ▷ c = c", all3((a, b, c) => a.mul(b).skip(c).eq(a.skip(b.skip(c))) && N.skip(c).eq(c))],
+    ["▷ acts by endomorphisms of ⊕ and fixes ∅", all3((a, b, c) => a.skip(b.add(c)).eq(a.skip(b).add(a.skip(c))) && a.skip(N).m)],
+    ["Product fusion skips a null factor: 2 ⊗ ∅ ⊗ 4 = 8", new R(2).mul(N).mul(4).eq(8) && N.mul(N).mul(N).m],
+    ["Neuron without rescaling equals zero imputation", (() => {
+      const x = [new R(0.8), N, new R(0.5), N], w = [1.5, -2, 0.5, 3];
+      return Math.abs(neuron(x, w, 0.5, "none").y.v - (1.5 * 0.8 + 0.5 * 0.5 + 0.5)) < 1e-12; })()],
+    ["Neuron with every input ∅ outputs ∅ and adds no bias", neuron([N, N], [1, 2], 5, "none").y.m],
+    ["Rescaling factors are n/k and √(n/k)", (() => {
+      const x = [new R(1), new R(1), N, N, N, N, N, N], w = Array(8).fill(1);
+      return neuron(x, w, 0, "mean").y.eq(8) && neuron(x, w, 0, "variance").y.eq(4) && neuron(x, w, 0, "none").y.eq(2); })()],
+    ["∅ update leaves weights bit-for-bit unchanged; AdamW moves them", (() => {
+      const r = adamwDrift(0.001, 0.02, 200); return r.driftNull.every(d => d === 0) && r.drift[200] > 0; })()],
+    ["MAC: a null operand holds the accumulator", (() => {
+      const m = new MacModel(); m.step(3, false, 4, false); m.step(9, true, 9, false); m.step(9, false, 9, true);
+      return m.acc === 12 && !m.accNull && m.cycles === 3 && m.active === 1; })()],
+    ["MAC: a real zero product makes the sum real, not ∅", (() => { const m = new MacModel(); m.step(0, false, 7, false); return m.acc === 0 && !m.accNull; })()],
+    ["MAC: 256 worst-case products fit in 16 + 16 + 8 bits", (() => {
+      const m = new MacModel(); for (let i = 0; i < 256; i++) m.step(-32768, false, -32768, false);
+      return !m.ovf && m.acc === 256 * 2 ** 30; })()],
+    ["MAC: overflow wraps and sets the sticky flag", (() => {
+      const m = new MacModel(4, 1); for (let i = 0; i < 3; i++) m.step(-8, false, -8, false);
+      const before = m.acc === 192 && !m.ovf; m.step(-8, false, -8, false);
+      return before && m.ovf && m.acc === -256; })()],
+  ];
+  return checks.map(([name, ok]) => ({ name, ok: Boolean(ok) }));
+}
+// </logic> ===================================================================
+
+// Stored benchmark results of v1.1.0 (benchmarks/results/core.json, missing_data.json).
+const RESULTS = {
+ "mac": [
+  {
+   "p": 0.1,
+   "active": 810046.8,
+   "sd": 33.70014836762592,
+   "measured": 18.995319999999992,
+   "expected": 18.999999999999993
+  },
+  {
+   "p": 0.5,
+   "active": 250203.8,
+   "sd": 175.6593293850344,
+   "measured": 74.97962,
+   "expected": 75.0
+  },
+  {
+   "p": 0.7,
+   "active": 89970.2,
+   "sd": 322.0988978559225,
+   "measured": 91.00298,
+   "expected": 90.99999999999999
+  },
+  {
+   "p": 0.9,
+   "active": 10011.2,
+   "sd": 110.30276515119647,
+   "measured": 98.99888,
+   "expected": 99.0
+  }
+ ],
+ "drift": [
+  {
+   "lr": 0.001,
+   "wd": 0.01,
+   "zero": 3.0057392409906304e-05,
+   "masked": 0.0,
+   "nul": 0.0
+  },
+  {
+   "lr": 0.001,
+   "wd": 0.02,
+   "zero": 0.00010416805165019215,
+   "masked": 0.0,
+   "nul": 0.0
+  },
+  {
+   "lr": 0.01,
+   "wd": 0.1,
+   "zero": 0.14132329991426118,
+   "masked": 0.0,
+   "nul": 0.0
+  }
+ ],
+ "scale": [
+  {
+   "missing": 0.0,
+   "none": 1.0,
+   "mean": 1.0,
+   "variance": 1.0
+  },
+  {
+   "missing": 0.3,
+   "none": 0.8368814899302846,
+   "mean": 1.199405800402787,
+   "variance": 1.0001728312044997
+  },
+  {
+   "missing": 0.6,
+   "none": 0.6327166107564789,
+   "mean": 1.6022056935958504,
+   "variance": 1.000676567933937
+  },
+  {
+   "missing": 0.9,
+   "none": 0.3151721346338465,
+   "mean": 3.4665434778867366,
+   "variance": 0.9967834949503989
+  }
+ ],
+ "missing": [
+  {
+   "name": "Synthetic",
+   "metric": "R²",
+   "rows": [
+    {
+     "rate": 0.0,
+     "cells": [
+      [
+       0.8779350930304988,
+       0.037807034186063564
+      ],
+      [
+       0.8746010392100345,
+       0.037859012776130074
+      ],
+      [
+       0.8779350930304988,
+       0.037807034186063564
+      ],
+      [
+       0.8779350930304988,
+       0.037807034186063564
+      ]
+     ]
+    },
+    {
+     "rate": 0.2,
+     "cells": [
+      [
+       0.762920710790555,
+       0.052242623582111174
+      ],
+      [
+       0.7532925537241096,
+       0.04443230749393263
+      ],
+      [
+       0.7530130357448697,
+       0.057379251913538626
+      ],
+      [
+       0.7576766983434055,
+       0.05858136483533081
+      ]
+     ]
+    },
+    {
+     "rate": 0.4,
+     "cells": [
+      [
+       0.6941903201519221,
+       0.05398582005154203
+      ],
+      [
+       0.6763395242327198,
+       0.05753633678122236
+      ],
+      [
+       0.670787447819537,
+       0.061408337727126366
+      ],
+      [
+       0.6835788910775575,
+       0.05187669264398673
+      ]
+     ]
+    },
+    {
+     "rate": 0.6,
+     "cells": [
+      [
+       0.5657382213712657,
+       0.07287918958999118
+      ],
+      [
+       0.5556007892313761,
+       0.054498175739319414
+      ],
+      [
+       0.5175626580121905,
+       0.07758661623659621
+      ],
+      [
+       0.553194979291272,
+       0.08306044361118058
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Diabetes",
+   "metric": "R²",
+   "rows": [
+    {
+     "rate": 0.0,
+     "cells": [
+      [
+       0.38875679759235354,
+       0.08460893526548234
+      ],
+      [
+       0.40366060568907364,
+       0.07428477373822666
+      ],
+      [
+       0.38875679759235354,
+       0.08460893526548234
+      ],
+      [
+       0.38875679759235354,
+       0.08460893526548234
+      ]
+     ]
+    },
+    {
+     "rate": 0.2,
+     "cells": [
+      [
+       0.3563170559755817,
+       0.10514589004345073
+      ],
+      [
+       0.3775877927272303,
+       0.0488266807261917
+      ],
+      [
+       0.3495365593347458,
+       0.09161912137517256
+      ],
+      [
+       0.33965481545125226,
+       0.11805955240437332
+      ]
+     ]
+    },
+    {
+     "rate": 0.4,
+     "cells": [
+      [
+       0.29476648270422706,
+       0.10043472516118562
+      ],
+      [
+       0.28285101209516583,
+       0.0688211926259556
+      ],
+      [
+       0.2268438204270904,
+       0.07319621174514261
+      ],
+      [
+       0.29328445458742813,
+       0.0718548367510118
+      ]
+     ]
+    },
+    {
+     "rate": 0.6,
+     "cells": [
+      [
+       0.2239716793741536,
+       0.11728880258969986
+      ],
+      [
+       0.1661043086796275,
+       0.1121593251666689
+      ],
+      [
+       0.020864401642989326,
+       0.10800771136567579
+      ],
+      [
+       0.1727254949816928,
+       0.09483550334309794
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Breast cancer",
+   "metric": "accuracy",
+   "rows": [
+    {
+     "rate": 0.0,
+     "cells": [
+      [
+       0.9565217391304348,
+       0.0061487546190134605
+      ],
+      [
+       0.9686956521739131,
+       0.0200188946664719
+      ],
+      [
+       0.9565217391304348,
+       0.0061487546190134605
+      ],
+      [
+       0.9565217391304348,
+       0.0061487546190134605
+      ]
+     ]
+    },
+    {
+     "rate": 0.2,
+     "cells": [
+      [
+       0.9356521739130435,
+       0.028576829087226075
+      ],
+      [
+       0.9443478260869564,
+       0.02722169711738875
+      ],
+      [
+       0.9460869565217391,
+       0.011337743313395892
+      ],
+      [
+       0.9373913043478261,
+       0.0303726072983878
+      ]
+     ]
+    },
+    {
+     "rate": 0.4,
+     "cells": [
+      [
+       0.9339130434782609,
+       0.01905121939148405
+      ],
+      [
+       0.9443478260869564,
+       0.020018894666471884
+      ],
+      [
+       0.9339130434782609,
+       0.023494358410619632
+      ],
+      [
+       0.9339130434782609,
+       0.01905121939148405
+      ]
+     ]
+    },
+    {
+     "rate": 0.6,
+     "cells": [
+      [
+       0.9165217391304348,
+       0.009914568913905545
+      ],
+      [
+       0.9269565217391305,
+       0.0317123174414095
+      ],
+      [
+       0.911304347826087,
+       0.015555255495650674
+      ],
+      [
+       0.9113043478260868,
+       0.019829137827811066
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+};
+
+// ---------------------------------------------------------------- utilities
+const $ = id => document.getElementById(id);
+function el(tag, props = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") node.className = v; else if (k in node) node[k] = v; else node.setAttribute(k, v);
+  }
+  for (const c of children) node.append(c);
+  return node;
+}
+function fmtNum(v) {
+  if (Number.isNaN(v)) return "nan";
+  if (v === Infinity) return "inf";
+  if (v === -Infinity) return "-inf";
+  if (Object.is(v, -0)) v = 0;
+  if (Number.isInteger(v)) return v.toLocaleString("en-US");
+  const a = Math.abs(v);
+  return (a >= 1e6 || a < 1e-4) ? v.toExponential(3) : String(Number(v.toPrecision(6)));
+}
+const show = r => (r.m ? "∅" : fmtNum(r.v));
+function setValue(node, r) { node.textContent = show(r); node.classList.toggle("void", r.m); }
+
+// Number input with a "∅" toggle. Calls onChange after every edit.
+function operandEditor(label, state, onChange, opts = {}) {
+  const input = el("input", { type: "number", step: opts.step || "0.5", value: state.v, ariaLabel: label + " value" });
+  if (opts.min !== undefined) { input.min = opts.min; input.max = opts.max; }
+  const check = el("input", { type: "checkbox", checked: state.m, ariaLabel: label + " is null" });
+  const box = el("div", { class: "box" }, input, el("label", { class: "tog" }, check, "∅"));
+  const sync = () => { box.classList.toggle("is-null", state.m); input.disabled = state.m; input.value = state.v; check.checked = state.m; };
+  input.addEventListener("input", () => { const v = parseFloat(input.value); if (!Number.isNaN(v)) { state.v = v; onChange(); } });
+  check.addEventListener("change", () => { state.m = check.checked; sync(); onChange(); });
+  sync();
+  const node = el("div", { class: "operand" }, el("span", {}, label), box);
+  node.sync = sync;
+  return node;
+}
+const toR = s => new R(s.v, s.m);
+
+// ---------------------------------------------------------------- operators
+const opState = { a: { v: 5, m: false }, b: { v: 3, m: true } };
+const OPS = [
+  ["⊕", "a + b", (a, b) => a.add(b), "∅ only if both are ∅"],
+  ["⊖", "a - b", (a, b) => a.sub(b), "x ⊖ ∅ = x and ∅ ⊖ x = −x"],
+  ["⊗", "a * b", (a, b) => a.mul(b), "∅ acts as 1; a real 0 still gives 0"],
+  ["⊘", "a / b", (a, b) => a.div(b), "∅ if either is ∅; real ÷ 0 is IEEE-754"],
+  ["⊙", "a.synaptic_mul(b)", (a, b) => a.odot(b), "∅ if either is ∅ (absorbing)"],
+  ["▷", "a.synaptic_skip(b)", (a, b) => a.skip(b), "∅ if b is ∅; a null a acts as 1"],
+];
+function initOperators() {
+  const edA = operandEditor("a", opState.a, renderOperators), edB = operandEditor("b", opState.b, renderOperators);
+  $("op-operands").append(edA, edB);
+  const presets = [["5 and ∅", 5, false, 3, true], ["0 and ∅", 0, false, 3, true], ["∅ and ∅", 5, true, 3, true], ["6 and 0", 6, false, 0, false], ["∅ and 3.5", 5, true, 3.5, false]];
+  for (const [name, av, am, bv, bm] of presets) {
+    $("op-presets").append(el("button", { onclick: () => { Object.assign(opState.a, { v: av, m: am }); Object.assign(opState.b, { v: bv, m: bm }); edA.sync(); edB.sync(); renderOperators(); } }, name));
+  }
+  for (const [sym, py] of OPS) {
+    $("op-tiles").append(el("div", { class: "tile" }, el("div", { class: "expr" }), el("div", { class: "val" }), el("div", { class: "rule" }), el("div", { class: "py" }, py)));
+  }
+  const tables = [
+    ["⊕", [["x + y", "x", "x"], ["y", "0", "0"], ["y", "0", "∅"]]],
+    ["⊗", [["x · y", "0", "x"], ["0", "0", "0"], ["y", "0", "∅"]]],
+    ["⊙", [["x · y", "0", "∅"], ["0", "0", "∅"], ["∅", "∅", "∅"]]],
+    ["▷", [["x · y", "0", "∅"], ["0", "0", "∅"], ["y", "0", "∅"]]],
+  ];
+  const heads = ["x", "0", "∅"], cols = ["y", "0", "∅"];
+  for (const [sym, rows] of tables) {
+    const t = el("table", { class: "op-table" }, el("caption", {}, "a " + sym + " b"));
+    const hr = el("tr", {}, el("th", {}, sym));
+    cols.forEach(c => hr.append(el("th", { scope: "col" }, c)));
+    t.append(el("thead", {}, hr));
+    const body = el("tbody");
+    rows.forEach((row, i) => {
+      const tr = el("tr", {}, el("th", { scope: "row" }, heads[i]));
+      row.forEach(c => tr.append(el("td", { class: c === "∅" ? "void" : "" }, c)));
+      body.append(tr);
+    });
+    t.append(body);
+    $("op-tables").append(el("div", { class: "panel" }, t));
+  }
+  renderOperators();
+}
+function renderOperators() {
+  const a = toR(opState.a), b = toR(opState.b);
+  [...$("op-tiles").children].forEach((tile, i) => {
+    const [sym, , fn, rule] = OPS[i];
+    tile.children[0].textContent = show(a) + " " + sym + " " + show(b);
+    setValue(tile.children[1], fn(a, b));
+    tile.children[2].textContent = rule;
+  });
+}
+
+// ---------------------------------------------------------------- structure
+const stState = { a: { v: 7.5, m: false }, b: { v: 1.5, m: false }, c: { v: 2, m: true } };
+function initStructure() {
+  for (const k of ["a", "b", "c"]) $("st-operands").append(operandEditor(k, stState[k], renderStructure));
+  renderStructure();
+}
+function renderStructure() {
+  const a = toR(stState.a), b = toR(stState.b), c = toR(stState.c);
+  const lhs = a.mul(b.add(c)), rhs = a.mul(b).add(a.mul(c)), gap = rhs.sub(lhs);
+  const lhsS = a.odot(b.add(c)), rhsS = a.odot(b).add(a.odot(c));
+  const chi = c.chiPoly();
+  const line = (label, r) => { const v = el("b"); setValue(v, r); return el("div", {}, el("span", { class: "lhs" }, label), "=", v); };
+  $("st-derive").replaceChildren(
+    line("a ⊗ (b ⊕ c)", lhs),
+    line("(a ⊗ b) ⊕ (a ⊗ c)", rhs),
+    line("difference", gap),
+    line("a ⊙ (b ⊕ c)", lhsS),
+    line("(a ⊙ b) ⊕ (a ⊙ c)", rhsS),
+    line("χ∅(c), by the polynomial", new R(chi)),
+  );
+  const ok = lhs.eq(rhs);
+  $("st-verdict").replaceChildren(
+    ok ? "⊗ distributes for these values (a is ∅ or 0, or b and c are both real). ⊙ always distributes."
+       : "⊗ does not distribute here: the two sides differ by a = " + show(a) + " because " + (b.m && c.m ? "b and c are" : b.m ? "b is" : "c is") + " ∅. ⊙ distributes."
+  );
+}
+
+// ---------------------------------------------------------------- linear layer
+const LY_X = [0.8, -1.2, 0.5, 1.5, -0.3, 0.9, -0.7, 1.1];
+const LY_W = [0.6, -0.4, 1.1, 0.3, -0.9, 0.7, 0.2, -0.5];
+const LY_B = 0.5;
+const lyNull = [false, true, false, false, true, false, true, false];
+function initLayer() {
+  LY_X.forEach((x, j) => {
+    const cell = el("button", { class: "cell", type: "button", onclick: () => { lyNull[j] = !lyNull[j]; renderLayer(); } },
+      el("span", { class: "x" }), el("span", { class: "w" }, "w = " + LY_W[j]));
+    $("ly-cells").append(cell);
+  });
+  const set = f => () => { lyNull.forEach((_, j) => lyNull[j] = f(j)); renderLayer(); };
+  $("ly-presets").append(
+    el("button", { onclick: set(() => false) }, "All present"),
+    el("button", { onclick: set(() => true) }, "All ∅"),
+    el("button", { onclick: set(() => Math.random() < 0.5) }, "Random half"),
+  );
+  renderLayer();
+}
+function renderLayer() {
+  const x = LY_X.map((v, j) => new R(v, lyNull[j]));
+  [...$("ly-cells").children].forEach((cell, j) => {
+    cell.classList.toggle("void", lyNull[j]);
+    cell.setAttribute("aria-pressed", String(lyNull[j]));
+    cell.setAttribute("aria-label", "input " + (j + 1) + (lyNull[j] ? ", null" : ", value " + LY_X[j]));
+    cell.children[0].textContent = lyNull[j] ? "∅" : "x = " + LY_X[j];
+  });
+  const rows = [["False", "none", "Equals zero imputation"], ['"mean"', "mean", "Unbiased for the full sum"], ['"variance"', "variance", "Second moment, for independent inputs"]];
+  const body = $("ly-table").tBodies[0];
+  body.replaceChildren();
+  let info;
+  for (const [label, mode, keeps] of rows) {
+    const r = neuron(x, LY_W, LY_B, mode); info = r;
+    const out = el("td", { class: "mono" }); setValue(out, r.y.m ? r.y : new R(Number(r.y.v.toFixed(4))));
+    body.append(el("tr", {}, el("td", { class: "mono" }, label), el("td", { class: "mono" }, r.y.m ? "–" : "× " + fmtNum(Number(r.factor.toFixed(4)))), out, el("td", {}, keeps)));
+  }
+  const imputed = LY_X.reduce((s, v, j) => s + (lyNull[j] ? 0 : v) * LY_W[j], 0) + LY_B;
+  $("ly-note").textContent = info.k === 0
+    ? "Coverage 0 of 8: every input is ∅, so the output is ∅ and the bias (0.5) is not added. An ordinary layer would output the bias alone."
+    : "Coverage " + info.k + " of " + info.n + " (" + (info.k / info.n).toFixed(2) + "). An ordinary layer on the zero-imputed input gives " + fmtNum(Number(imputed.toPrecision(6))) + ", the same as the first row. Bias b = 0.5.";
+}
+
+// ---------------------------------------------------------------- fusion
+const fuState = [["Camera", { v: 2, m: false }], ["LiDAR", { v: 3, m: true }], ["Radar", { v: 4, m: false }]];
+function initFusion() {
+  for (const [name, s] of fuState) $("fu-operands").append(operandEditor(name, s, renderFusion));
+  renderFusion();
+}
+function renderFusion() {
+  const rs = fuState.map(([, s]) => toR(s));
+  const present = rs.filter(r => !r.m).length;
+  const fused = rs.reduce((p, r) => p.mul(r), R.NULL);
+  const zero = rs.reduce((p, r) => p * (r.m ? 0 : r.v), 1);
+  const body = $("fu-table").tBodies[0];
+  body.replaceChildren();
+  const row = (name, valueNode, count) => body.append(el("tr", {}, el("td", {}, name), valueNode, el("td", { class: "mono" }, count)));
+  const v1 = el("td", { class: "mono" }); setValue(v1, fused);
+  row("ℝ∅: skipped by ⊗", v1, present + " of 3");
+  row("Imputed as 0", el("td", { class: "mono" }, fmtNum(zero)), "not recorded");
+  row("Encoded as NaN", el("td", { class: "mono" }, present === 3 ? fmtNum(zero) : "nan"), "not recorded");
+}
+
+// ---------------------------------------------------------------- charts
+// Line chart: 2px lines, end dots with a surface ring, direct end labels,
+// hairline grid, crosshair tooltip listing every series.
+function niceTicks(max, count = 4) {
+  if (!(max > 0)) return [0, 1];
+  const raw = max / count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw);
+  const ticks = [];
+  const top = Math.ceil(max / step - 1e-9) * step;
+  for (let t = 0; t <= top + step * 0.5; t += step) ticks.push(Number(t.toPrecision(12)));
+  return ticks;
+}
+function lineChart(host, legendHost, cfg) {
+  const NS = "http://www.w3.org/2000/svg", W = 560, H = 260, M = { l: 54, r: 92, t: 10, b: 34 };
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", cfg.label);
+  const mk = (tag, attrs, text) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (text !== undefined) n.textContent = text; svg.append(n); return n; };
+  const xs = cfg.series[0].points.map(p => p[0]);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yTicks = niceTicks(Math.max(...cfg.series.flatMap(s => s.points.map(p => p[1]))));
+  const yMax = yTicks[yTicks.length - 1];
+  const X = x => M.l + (x - xMin) / (xMax - xMin || 1) * (W - M.l - M.r);
+  const Y = y => H - M.b - y / yMax * (H - M.t - M.b);
+  for (const t of yTicks) { mk("line", { class: "grid", x1: M.l, x2: W - M.r, y1: Y(t), y2: Y(t) }); mk("text", { class: "axis-text", x: M.l - 8, y: Y(t) + 4, "text-anchor": "end" }, cfg.yFmt(t)); }
+  for (const t of cfg.xTicks) mk("text", { class: "axis-text", x: X(t), y: H - M.b + 16, "text-anchor": "middle" }, cfg.xFmt(t));
+  mk("text", { class: "axis-text", x: (M.l + W - M.r) / 2, y: H - 2, "text-anchor": "middle" }, cfg.xTitle);
+  const cross = mk("line", { class: "cross", y1: M.t, y2: H - M.b });
+  // Stagger end labels that would collide.
+  const ends = cfg.series.map(s => ({ s, y: Y(s.points[s.points.length - 1][1]) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13;
+  for (const s of cfg.series) {
+    mk("path", { class: "line", stroke: `var(${s.color})`, d: s.points.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1)).join(" ") });
+    const last = s.points[s.points.length - 1];
+    mk("circle", { class: "dot-end", r: 4, cx: X(last[0]), cy: Y(last[1]), fill: `var(${s.color})` });
+  }
+  for (const e of ends) mk("text", { class: "end-label", x: W - M.r + 9, y: e.y + 4 }, e.s.short);
+  legendHost.replaceChildren(...cfg.series.map(s => el("span", {}, el("i", { style: `border-color: var(${s.color})` }), s.name)));
+  const tip = el("div", { class: "tip" });
+  host.replaceChildren(svg, tip);
+  const move = ev => {
+    const box = svg.getBoundingClientRect(), px = (ev.clientX - box.left) / box.width * W;
+    let best = 0;
+    xs.forEach((x, i) => { if (Math.abs(X(x) - px) < Math.abs(X(xs[best]) - px)) best = i; });
+    cross.setAttribute("x1", X(xs[best])); cross.setAttribute("x2", X(xs[best])); cross.style.visibility = "visible";
+    tip.replaceChildren(el("div", { class: "t" }, cfg.xTitle + ": " + cfg.xFmt(xs[best])),
+      ...cfg.series.map(s => el("div", { class: "r" }, el("i", { style: `border-color: var(${s.color})` }), el("b", {}, cfg.tipFmt(s.points[best][1])), el("span", {}, s.name))));
+    tip.style.visibility = "visible";
+    const left = X(xs[best]) / W * box.width;
+    tip.style.left = Math.min(left + 12, box.width - tip.offsetWidth - 4) + "px"; tip.style.top = "8px";
+  };
+  svg.addEventListener("pointermove", move);
+  svg.addEventListener("pointerleave", () => { cross.style.visibility = "hidden"; tip.style.visibility = "hidden"; });
+}
+
+// ---------------------------------------------------------------- frozen weights
+function renderFrozen() {
+  const lr = +$("fz-lr").value, wd = +$("fz-wd").value, steps = +$("fz-steps").value;
+  const sim = adamwDrift(lr, wd, steps);
+  const stride = Math.max(1, Math.floor(steps / 100));
+  const pick = arr => arr.map((d, t) => [t, d]).filter(p => p[0] % stride === 0 || p[0] === steps);
+  const sci = v => (v === 0 ? "0" : v.toExponential(1).replace("e-", "e−"));
+  lineChart($("fz-chart"), $("fz-legend"), {
+    label: "Mean squared drift of six frozen weights against optimisation step",
+    series: [
+      { name: "AdamW, zero gradient", short: "AdamW", color: "--series-1", points: pick(sim.drift) },
+      { name: "∅ update (same as a masked update)", short: "∅ update", color: "--series-2", points: pick(sim.driftNull) },
+    ],
+    xTicks: [0, steps / 4, steps / 2, 3 * steps / 4, steps], xFmt: t => String(Math.round(t)), xTitle: "Step",
+    yFmt: sci, tipFmt: v => (v === 0 ? "0" : v.toExponential(2).replace("e-", "e−")),
+  });
+  const item = (k, v) => el("div", { class: "readout" }, el("dt", {}, k), el("dd", {}, v));
+  $("fz-readouts").replaceChildren(
+    item("Drift after " + steps + " steps, AdamW (MSE)", sim.drift[steps].toExponential(2)),
+    item("Decay only, (1 − (1 − lr·λ)ᵗ)² · mean W²", sim.closedForm.toExponential(2)),
+    item("Drift with ∅ update (MSE)", sim.driftNull[steps] === 0 ? "0 (unchanged)" : sim.driftNull[steps].toExponential(2)),
+    item("First weight: start → AdamW", FZ_W0[0] + " → " + sim.final[0].toFixed(5)),
+  );
+}
+
+// ---------------------------------------------------------------- MAC cell
+let mac = new MacModel(16, 8);
+const mcState = { w: { v: 25, m: false }, x: { v: 4, m: true } };
+let mcEditors = [], mcStream = null;
+function initMac() {
+  const build = () => {
+    mcEditors = [operandEditor("w_val", mcState.w, renderMac, { step: "1", min: mac.lo, max: mac.hi }), operandEditor("x_val", mcState.x, renderMac, { step: "1", min: mac.lo, max: mac.hi })];
+    $("mc-operands").replaceChildren(...mcEditors);
+  };
+  build();
+  $("mc-config").addEventListener("change", () => {
+    const [w, g] = $("mc-config").value.split(",").map(Number);
+    mac = new MacModel(w, g); mcStream = null;
+    const clamp = s => { s.v = Math.max(mac.lo, Math.min(mac.hi, Math.trunc(s.v))); };
+    clamp(mcState.w); clamp(mcState.x); build(); renderMac();
+  });
+  $("mc-clock").addEventListener("click", () => { const [w, x] = mcOperands(); mac.step(w, mcState.w.m, x, mcState.x.m); renderMac(); });
+  $("mc-clear").addEventListener("click", () => { mac.reset(); mcStream = null; renderMac(); });
+  for (const id of ["mc-pw", "mc-px"]) $(id).addEventListener("input", () => { $(id + "-v").textContent = (+$(id).value).toFixed(2); });
+  $("mc-run").addEventListener("click", () => {
+    const pw = +$("mc-pw").value, px = +$("mc-px").value, before = { c: mac.cycles, a: mac.active };
+    const span = mac.hi - mac.lo + 1;
+    for (let i = 0; i < 1000; i++) mac.step(mac.lo + Math.floor(Math.random() * span), Math.random() < pw, mac.lo + Math.floor(Math.random() * span), Math.random() < px);
+    mcStream = { pw, px, skipped: 1000 - (mac.active - before.a) };
+    renderMac();
+  });
+  renderMac();
+}
+function mcOperands() {
+  const fix = s => Math.max(mac.lo, Math.min(mac.hi, Math.trunc(s.v)));
+  return [fix(mcState.w), fix(mcState.x)];
+}
+function renderMac() {
+  const [w, x] = mcOperands(), synNull = mcState.w.m || mcState.x.m;
+  const item = (k, node) => el("div", { class: "readout" }, el("dt", {}, k), node);
+  const val = (r) => { const dd = el("dd"); setValue(dd, r); return dd; };
+  const skipped = mac.cycles - mac.active;
+  $("mc-readouts").replaceChildren(
+    item("syn_null = w_null | x_null", el("dd", {}, synNull ? "1 (skip)" : "0 (active)")),
+    item("Product this cycle", val(synNull ? R.NULL : new R(w * x))),
+    item("acc_val", val(new R(mac.acc, mac.accNull))),
+    item("acc_null", el("dd", {}, mac.accNull ? "1 (nothing accumulated)" : "0 (real sum)")),
+    item("acc_ovf", el("dd", {}, mac.ovf ? "1 (sum wrapped)" : "0")),
+    item("Cycles skipped / total", el("dd", {}, skipped.toLocaleString("en-US") + " / " + mac.cycles.toLocaleString("en-US"))),
+  );
+  $("mc-stream").textContent = mcStream
+    ? "Last stream: " + mcStream.skipped + " of 1,000 cycles skipped (" + (mcStream.skipped / 10).toFixed(1) + "%). Expected 1 − (1 − " + mcStream.pw.toFixed(2) + ")(1 − " + mcStream.px.toFixed(2) + ") = " + (100 * (1 - (1 - mcStream.pw) * (1 - mcStream.px))).toFixed(1) + "%."
+    : "Weights and inputs are null independently, so the expected share of skipped cycles is 1 − (1 − p_w)(1 − p_x).";
+}
+
+// ---------------------------------------------------------------- measured results
+function initResults() {
+  const pm = (m, s, d = 3) => m.toFixed(d) + " ± " + s.toFixed(d);
+  const tr = cells => el("tr", {}, ...cells.map(c => el("td", {}, c)));
+  for (const r of RESULTS.mac) $("rs-mac").tBodies[0].append(tr([r.p.toFixed(2), Math.round(r.active).toLocaleString("en-US") + " ± " + Math.round(r.sd), r.measured.toFixed(2) + "%", r.expected.toFixed(2) + "%"]));
+  const sci = v => (v === 0 ? "0" : v.toExponential(1));
+  for (const r of RESULTS.drift) $("rs-drift").tBodies[0].append(tr([String(r.lr), String(r.wd), sci(r.zero), sci(r.masked), sci(r.nul)]));
+  for (const r of RESULTS.scale) $("rs-scale").tBodies[0].append(tr([Math.round(r.missing * 100) + "%", r.none.toFixed(2), r.mean.toFixed(2), r.variance.toFixed(2)]));
+  lineChart($("rs-scale-chart"), $("rs-scale-legend"), {
+    label: "Relative output standard deviation against the fraction of missing inputs, for three normalisation modes",
+    series: [
+      { name: "normalize=False", short: "False", color: "--series-1", points: RESULTS.scale.map(r => [r.missing, r.none]) },
+      { name: 'normalize="mean"', short: '"mean"', color: "--series-2", points: RESULTS.scale.map(r => [r.missing, r.mean]) },
+      { name: 'normalize="variance"', short: '"variance"', color: "--series-3", points: RESULTS.scale.map(r => [r.missing, r.variance]) },
+    ],
+    xTicks: RESULTS.scale.map(r => r.missing), xFmt: t => Math.round(t * 100) + "%", xTitle: "Missing inputs",
+    yFmt: v => v.toFixed(1), tipFmt: v => v.toFixed(2),
+  });
+  const body = $("rs-missing").tBodies[0];
+  for (const d of RESULTS.missing) d.rows.forEach((row, i) => {
+    body.append(tr([i === 0 ? d.name + " (" + d.metric + ")" : "", Math.round(row.rate * 100) + "%", ...row.cells.map(c => pm(c[0], c[1]))]));
+  });
+}
+
+// ---------------------------------------------------------------- checks
+function renderChecks() {
+  const results = runChecks(), passed = results.filter(r => r.ok).length, ok = passed === results.length;
+  $("ck-list").replaceChildren(...results.map(r => el("li", {}, el("span", { class: "mark " + (r.ok ? "ok" : "fail") }, r.ok ? "pass" : "FAIL"), el("span", {}, r.name))));
+  $("checks-pill").replaceChildren(el("span", { class: "dot " + (ok ? "ok" : "fail") }), el("span", {}, passed + " of " + results.length + " checks " + (ok ? "pass" : "pass; see the list")));
+}
+
+// ---------------------------------------------------------------- navigation highlight
+function initNav() {
+  const links = [...document.querySelectorAll(".side nav a")];
+  const byId = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+  const observer = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) { links.forEach(a => a.removeAttribute("aria-current")); byId.get(e.target.id)?.setAttribute("aria-current", "true"); }
+  }, { rootMargin: "-10% 0px -75% 0px" });
+  document.querySelectorAll("main section").forEach(s => observer.observe(s));
+}
+
+if (typeof document !== "undefined") {
+  initOperators(); initStructure(); initLayer(); initFusion();
+  for (const id of ["fz-lr", "fz-wd", "fz-steps"]) $(id).addEventListener("change", renderFrozen);
+  renderFrozen(); initMac(); initResults(); renderChecks(); initNav();
+  $("ck-run").addEventListener("click", renderChecks);
+}
+</script>
 </body>
 </html>
