@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests-numpy:
+    name: Tests (NumPy only, Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e ".[dev]"
+      - run: pytest
+
+  tests-torch:
+    name: Tests (with PyTorch)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e ".[dev]"
+      - run: pytest
+
+  hardware:
+    name: Verilog testbenches (Icarus Verilog)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: rnull_mac
+        run: |
+          iverilog -g2005 -Wall -o tb_mac.vvp hardware/rnull_mac.v hardware/tb_rnull_mac.v
+          vvp tb_mac.vvp | tee tb_mac.log
+          grep -q "TB_RNULL_MAC: PASS" tb_mac.log
+      - name: rnull_skip_cell
+        run: |
+          iverilog -g2005 -Wall -o tb_skip.vvp hardware/rnull_skip_cell.v hardware/tb_rnull_skip_cell.v
+          vvp tb_skip.vvp | tee tb_skip.log
+          grep -q "TB_RNULL_SKIP_CELL: PASS" tb_skip.log
+
+  benchmarks:
+    name: Benchmarks (quick mode)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - run: python benchmarks/run_benchmarks.py --quick
+      - run: python benchmarks/missing_data.py --quick

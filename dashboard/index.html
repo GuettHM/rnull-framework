@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Causal Transparency Algebra (ℝ_∅) & ∅-Net — Interactive Verification Lab (v1.0.1)</title>
+    <title>Causal Transparency Algebra (ℝ_∅) & ∅-Net — Interactive Explorer (v1.1.0)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & JetBrains Mono for Swiss-precision scientific typography -->
@@ -99,7 +99,7 @@
                             Causal Transparency Algebra (<span class="font-mono text-cyan-400">ℝ_∅</span>) &amp; <span class="font-mono text-cyan-400">∅-Net</span> Framework
                         </h1>
                         <span class="mono-badge text-xs px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-semibold">
-                            v1.0.1
+                            v1.1.0
                         </span>
                         <a href="https://doi.org/10.5281/zenodo.24175268" target="_blank" rel="noopener noreferrer" 
                            class="mono-badge text-xs px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/25 transition">
@@ -107,16 +107,16 @@
                         </a>
                     </div>
                     <p class="text-xs text-slate-400 mt-0.5">
-                        Author: <strong class="text-slate-200">Hakim Guettal</strong> &bull; Dual-Tensor PyTorch Emulator <code class="text-cyan-300">(v, m)</code> &amp; Synthesizable Verilog RTL Neuromorphic MAC
+                        Author: <strong class="text-slate-200">Hakim Guettal</strong> &bull; JavaScript port of the <code class="text-cyan-300">(value, mask)</code> operators &amp; behavioural model of the tagged MAC cell
                     </p>
                 </div>
             </div>
 
             <!-- Right Quick Actions -->
             <div class="flex flex-wrap items-center gap-2.5">
-                <div id="global-test-badge" class="mono-badge text-xs px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-active"></span>
-                    <span>ALL 12 AXIOM CHECKS PASSING</span>
+                <div id="global-test-badge" class="mono-badge text-xs px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 text-slate-300 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                    <span>CONSISTENCY CHECKS: NOT RUN</span>
                 </div>
 
                 <button onclick="switchTab('tab-tests'); runAllUnitTests();" 
@@ -124,7 +124,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Run Pytest Suite
+                    Run Consistency Checks
                 </button>
 
                 <button onclick="downloadDashboardFile()" 
@@ -147,19 +147,19 @@
                 </button>
                 <button onclick="switchTab('tab-fusion')" id="btn-tab-fusion"
                         class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>02. Multimodal Fusion &amp; OOD Safety</span>
+                    <span>02. Product Fusion &amp; Missing Inputs</span>
                 </button>
                 <button onclick="switchTab('tab-continual')" id="btn-tab-continual"
                         class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>03. Continual Learning (Zero-Drift)</span>
+                    <span>03. Frozen-Weight Drift</span>
                 </button>
                 <button onclick="switchTab('tab-hardware')" id="btn-tab-hardware"
                         class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>04. Hardware Verilog RTL MAC</span>
+                    <span>04. Tagged MAC Cell</span>
                 </button>
                 <button onclick="switchTab('tab-tests')" id="btn-tab-tests"
                         class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent">
-                    <span>05. Automated Pytest Suite</span>
+                    <span>05. Consistency Checks</span>
                 </button>
             </nav>
         </div>
@@ -401,11 +401,11 @@
             <div class="glass-panel rounded-2xl p-5 space-y-4">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-3">
                     <div>
-                        <span class="text-xs font-mono text-cyan-400 uppercase">Monograph Section 2 &bull; Controlled Non-Distributivity</span>
+                        <span class="text-xs font-mono text-cyan-400 uppercase">Theory note &sect;3 &bull; Distributivity defect</span>
                         <h3 class="text-base font-bold text-white">Branchless Causal Defect Polynomial <span class="font-mono text-cyan-300">χ_∅(x) = ((1 ⊗ 0) ⊕ (1 ⊗ x)) ⊖ (1 ⊗ (0 ⊕ x))</span></h3>
                     </div>
                     <span class="mono-badge text-xs px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                        Proves χ_∅(x) = 0 for all x ∈ ℝ (including 0.0) &amp; χ_∅(∅) = 1
+                        χ_∅(x) = 0 for finite x ∈ ℝ (including 0.0), χ_∅(∅) = 1
                     </span>
                 </div>
 
@@ -589,16 +589,16 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- TAB 02: MULTIMODAL SENSOR FUSION & OOD SAFETY                             -->
+        <!-- TAB 02: PRODUCT FUSION & MISSING INPUTS                                  -->
         <!-- ========================================================================= -->
         <section id="tab-fusion" class="tab-panel hidden space-y-6">
             <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-emerald-400">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <span class="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold">Tab 02 &bull; Multiplicative Gating &amp; Out-Of-Distribution (OOD) Safety</span>
-                        <h2 class="text-lg font-bold text-white mt-0.5">Autonomous Sensor Fusion <span class="font-mono text-emerald-300">Y = S_cam ⊗ S_lidar ⊗ S_radar</span> + Static Bias <span class="font-mono text-slate-300">b = +2.50</span></h2>
+                        <span class="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold">Tab 02 &bull; Product Fusion &amp; All-Missing Abstention</span>
+                        <h2 class="text-lg font-bold text-white mt-0.5">Product Fusion <span class="font-mono text-emerald-300">Y = S_cam ⊗ S_lidar ⊗ S_radar</span> + Static Bias <span class="font-mono text-slate-300">b = +2.50</span></h2>
                         <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                            Compare how Classical Real Arithmetic (<code class="font-mono">ℝ</code>), IEEE-754 <code class="font-mono">NaN</code>, and Causal Transparency Algebra (<code class="font-mono text-emerald-300">ℝ_∅</code>) handle single-sensor dropout (<code class="text-amber-300">S_lidar = ∅</code>) versus a complete sensor blackout (<code class="text-rose-300">All ∅ — OOD</code>).
+                            Compare how Classical Real Arithmetic (<code class="font-mono">ℝ</code>), IEEE-754 <code class="font-mono">NaN</code>, and Causal Transparency Algebra (<code class="font-mono text-emerald-300">ℝ_∅</code>) handle single-sensor dropout (<code class="text-amber-300">S_lidar = ∅</code>) versus all sensors missing (<code class="text-rose-300">all ∅</code>). Dropping a factor changes the magnitude of the product and the result mask does not record it, so the number of sensors present is shown next to the output.
                         </p>
                     </div>
                     <div class="flex flex-wrap gap-2 shrink-0">
@@ -609,7 +609,7 @@
                             LiDAR Failure (S_lidar = ∅)
                         </button>
                         <button onclick="setFusionScenario('all_null')" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-rose-950/80 hover:bg-rose-900/70 border border-rose-500/40 text-rose-300 transition">
-                            Total Sensor Blackout (All ∅ — OOD)
+                            All Sensors Missing (all ∅)
                         </button>
                     </div>
                 </div>
@@ -686,7 +686,7 @@
                         </div>
                         <h4 class="text-sm font-bold text-white mt-1">Zero Imputation (<code class="font-mono">∅ ↦ 0.0</code>)</h4>
                         <p class="text-xs text-slate-400 mt-1" id="desc-classic">
-                            Imputing an offline sensor with <code class="font-mono">0.0</code> zeroes out the entire product (<code class="font-mono">x · 0 = 0</code>), leaving only the static bias (<code class="font-mono">+2.50</code>) and causing OOD hallucinations when all inputs are missing.
+                            Imputing an offline sensor with <code class="font-mono">0.0</code> zeroes out the entire product (<code class="font-mono">x · 0 = 0</code>), leaving only the static bias (<code class="font-mono">+2.50</code>) so the output is the bias alone when all inputs are missing.
                         </p>
                     </div>
                     <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
@@ -700,16 +700,16 @@
                     <div>
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-mono uppercase text-slate-400">2. IEEE-754 Floating-Point</span>
-                            <span id="status-nan" class="mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">GRAPH CRASH</span>
+                            <span id="status-nan" class="mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">NaN PROPAGATES</span>
                         </div>
                         <h4 class="text-sm font-bold text-white mt-1">Destructive <code class="font-mono">NaN</code> Propagation</h4>
                         <p class="text-xs text-slate-400 mt-1" id="desc-nan">
-                            Because IEEE-754 <code class="font-mono">NaN</code> is an absorbing element for both addition and multiplication, a single offline sensor corrupts the entire computation graph.
+                            Because IEEE-754 <code class="font-mono">NaN</code> is an absorbing element for both addition and multiplication, a single offline sensor makes the whole result NaN.
                         </p>
                     </div>
                     <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 font-mono text-xs space-y-1">
                         <div class="text-slate-400" id="eq-nan">y = (2.0 × NaN × 4.0) + 2.50</div>
-                        <div class="text-base font-bold text-rose-400 pt-1" id="out-nan">Output: NaN (Graph Failure)</div>
+                        <div class="text-base font-bold text-rose-400 pt-1" id="out-nan">Output: NaN</div>
                     </div>
                 </div>
 
@@ -718,9 +718,9 @@
                     <div>
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-mono uppercase text-emerald-400 font-semibold">3. Causal Transparency (ℝ_∅)</span>
-                            <span id="status-rnull" class="mono-badge text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">TRANSPARENT BYPASS</span>
+                            <span id="status-rnull" class="mono-badge text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">NULL FACTOR SKIPPED</span>
                         </div>
-                        <h4 class="text-sm font-bold text-white mt-1">Bi-Identity <code class="font-mono text-emerald-300">⊗</code> + OOD Bias Gating</h4>
+                        <h4 class="text-sm font-bold text-white mt-1">Bi-Identity <code class="font-mono text-emerald-300">⊗</code> + Bias Suppression</h4>
                         <p class="text-xs text-slate-300 mt-1" id="desc-rnull">
                             Offline sensors (<code class="font-mono">∅</code>) drop out transparently via <code class="font-mono">S_cam ⊗ ∅ ⊗ S_radar = S_cam ⊗ S_radar</code>. Under total blackout (<code class="font-mono">X = ∅</code>), <code class="font-mono">RNullLinear</code> suppresses bias and outputs <code class="font-mono">Y = ∅</code>.
                         </p>
@@ -740,10 +740,10 @@
             <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-violet-400">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
-                        <span class="text-[11px] font-mono uppercase tracking-wider text-violet-400 font-semibold">Tab 03 &bull;Eliminating Catastrophic Forgetting</span>
+                        <span class="text-[11px] font-mono uppercase tracking-wider text-violet-400 font-semibold">Tab 03 &bull; Frozen-Weight Drift Under AdamW</span>
                         <h2 class="text-lg font-bold text-white mt-0.5">Exact Parameter Freezing: <span class="font-mono text-violet-300">W(t+1) = W(t) ⊕ ΔW</span> with <span class="font-mono text-amber-300">ΔW = ∅</span></h2>
                         <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                            In standard optimizers (AdamW/SGD), setting <code class="font-mono">∇W = 0</code> on consolidated Task-A weights fails to prevent parameter drift caused by <strong>Weight Decay (<code class="font-mono">-λW</code>)</strong> and momentum tails. Under <code class="font-mono text-cyan-300">ℝ_∅</code> protected updates, frozen weights receive <code class="font-mono text-amber-300">ΔW = ∅</code>, guaranteeing exact <code class="font-mono text-emerald-300">MSE = 0.0000000000</code>.
+                            With AdamW, a zero gradient does not freeze a weight: decoupled weight decay (<code class="font-mono">−lr·λ·W</code>) and the decaying first-moment estimate still move it, slowly. Giving frozen weights <code class="font-mono text-amber-300">ΔW = ∅</code> leaves them bit-for-bit unchanged. That is numerically identical to a masked update (<code class="font-mono">W[~mask] += ΔW[~mask]</code>) or to excluding the weights from the optimizer; this tab simply applies the AdamW rule with zero gradient to six frozen weights and shows the difference.
                         </p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -773,10 +773,10 @@
                     </div>
                     <div class="space-y-1.5">
                         <div class="flex justify-between text-xs font-mono">
-                            <span class="text-slate-300">Momentum Tail (μ_tail):</span>
-                            <span id="cl-mom-val" class="text-violet-300">0.015</span>
+                            <span class="text-slate-300">Learning rate (lr):</span>
+                            <span id="cl-lr-val" class="text-violet-300">0.0010</span>
                         </div>
-                        <input type="range" id="cl-mom" min="0.000" max="0.04" step="0.005" value="0.015" oninput="document.getElementById('cl-mom-val').textContent = Number(this.value).toFixed(3)" class="w-full h-1.5 bg-slate-800 rounded-lg">
+                        <input type="range" id="cl-lr" min="0.0005" max="0.01" step="0.0005" value="0.001" oninput="document.getElementById('cl-lr-val').textContent = Number(this.value).toFixed(4)" class="w-full h-1.5 bg-slate-800 rounded-lg">
                     </div>
                     <div class="pt-2 border-t border-slate-800 flex items-center justify-between font-mono text-xs">
                         <span class="text-slate-400">Optimizer Steps Executed:</span>
@@ -790,7 +790,7 @@
                         <span class="text-xs font-mono uppercase text-rose-400 font-semibold">Standard AdamW (∇W = 0)</span>
                         <h4 class="text-sm font-bold text-white mt-1">Drift on 6 Frozen Task-A Weights</h4>
                         <p class="text-xs text-slate-400 mt-1">
-                            Even with zero gradient, <code class="font-mono">W(t+1) = W(t) - λW(t) + v_mom</code> erodes consolidated parameters over time.
+                            With zero gradient, <code class="font-mono">W(t+1) = W(t) − lr·λ·W(t) − lr·m/(√v + ε)</code> still moves the weight. The drift is small for typical settings and grows with lr·λ·t.
                         </p>
                     </div>
                     <div class="mt-4 bg-slate-950 p-3.5 rounded-xl border border-rose-500/30 font-mono">
@@ -805,12 +805,12 @@
                         <span class="text-xs font-mono uppercase text-emerald-400 font-semibold">ℝ_∅ Protected Update (ΔW = ∅)</span>
                         <h4 class="text-sm font-bold text-white mt-1">Frozen Rule: <code class="font-mono text-emerald-300">W(t) ⊕ ∅ = W(t)</code></h4>
                         <p class="text-xs text-slate-300 mt-1">
-                            Setting <code class="font-mono">frozen_mask = True</code> assigns <code class="font-mono">ΔW = ∅</code>; <code class="font-mono">torch.where</code> replaces the entire update with <code class="font-mono">0.0</code>.
+                            Setting <code class="font-mono">frozen_mask = True</code> assigns <code class="font-mono">ΔW = ∅</code>, so the whole update (gradient, momentum, decay) is skipped. Same numbers as a masked update.
                         </p>
                     </div>
                     <div class="mt-4 bg-slate-950 p-3.5 rounded-xl border border-emerald-500/40 font-mono">
                         <div class="text-[11px] text-slate-400">Mean Squared Error (MSE Drift):</div>
-                        <div id="cl-mse-rnull" class="text-xl font-bold text-emerald-400 mt-0.5">0.0000000000 (ZERO DRIFT)</div>
+                        <div id="cl-mse-rnull" class="text-xl font-bold text-emerald-400 mt-0.5">0.0000000000</div>
                     </div>
                 </div>
             </div>
@@ -828,21 +828,21 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- TAB 04: VERILOG RTL NEUROMORPHIC MAC (rnull_mac.v)                        -->
+        <!-- TAB 04: TAGGED MAC CELL (rnull_mac.v)                                    -->
         <!-- ========================================================================= -->
         <section id="tab-hardware" class="tab-panel hidden space-y-6">
             <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-amber-400">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
-                        <span class="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-semibold">Tab 04 &bull; Synthesizable Hardware Co-Design (`hardware/rnull_mac.v`)</span>
-                        <h2 class="text-lg font-bold text-white mt-0.5">Cycle-Accurate Neuromorphic MAC with 1-Bit Causal Tagging &amp; Zero-Power <span class="font-mono text-amber-300">∅-Bypass</span></h2>
+                        <span class="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-semibold">Tab 04 &bull; Behavioural model of `hardware/rnull_mac.v`</span>
+                        <h2 class="text-lg font-bold text-white mt-0.5">MAC Cell with 1-Bit Null Tags &amp; <span class="font-mono text-amber-300">∅-Bypass</span></h2>
                         <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                            When <code class="font-mono text-cyan-300">syn_null = w_null | x_null == 1'b1</code>, combinatorial multiplier and adder trees are physically gated (<code class="font-mono text-amber-300">∅-bypass</code>), preventing transistor switching and forwarding <code class="font-mono text-emerald-300">Acc(t) = Acc(t-1) ⊕ ∅ = Acc(t-1)</code>.
+                            When <code class="font-mono text-cyan-300">syn_null = w_null | x_null == 1'b1</code>, the multiplier operands are forced to zero (operand isolation) and the accumulator is not enabled, so <code class="font-mono text-emerald-300">Acc(t) = Acc(t-1)</code>. This page models the behaviour in floating point; the RTL is fixed-point with guard bits and an overflow flag. The skipped-cycle ratio is an activity figure, not a power measurement.
                         </p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 shrink-0">
                         <button onclick="runRtlBenchmark()" class="text-xs font-mono px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition shadow-md shadow-amber-500/10">
-                            Run 1,000-Synapse Matrix Benchmark (70% Sparsity)
+                            Run 1,000 random cycles
                         </button>
                         <button onclick="resetRtlAccumulator()" class="text-xs font-mono px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
                             Clear Accumulator
@@ -896,7 +896,7 @@
                     <!-- Sparsity Batch Slider -->
                     <div class="pt-3 border-t border-slate-800 space-y-2">
                         <div class="flex justify-between text-xs font-mono">
-                            <span class="text-slate-300">Benchmark ∅-Sparsity Ratio:</span>
+                            <span class="text-slate-300">Null rate per operand (w, x independent):</span>
                             <span id="rtl-sparsity-label" class="text-amber-300 font-bold">70%</span>
                         </div>
                         <input type="range" id="rtl-sparsity" min="0" max="95" step="5" value="70" oninput="document.getElementById('rtl-sparsity-label').textContent = this.value + '%'" class="w-full h-1.5 bg-slate-800 rounded-lg">
@@ -908,7 +908,7 @@
                     <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                         <h3 class="text-xs font-mono uppercase text-slate-300 font-semibold">Internal RTL Wire &amp; Register Telemetry (`rnull_mac.v`)</h3>
                         <span id="rtl-gate-status" class="mono-badge text-xs px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">
-                            ⚡ ZERO-POWER ∅-BYPASS ACTIVE
+                            ∅-BYPASS ACTIVE
                         </span>
                     </div>
 
@@ -924,7 +924,7 @@
                         </div>
                         <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
                             <div class="text-[10px] text-slate-400">wire prod (Multiplier Tree)</div>
-                            <div id="sig-prod" class="text-base font-bold text-slate-400 mt-1">GATED (0.0 mW)</div>
+                            <div id="sig-prod" class="text-base font-bold text-slate-400 mt-1">ISOLATED (operands = 0)</div>
                         </div>
                         <div class="bg-slate-950 p-3 rounded-xl border border-cyan-500/30">
                             <div class="text-[10px] text-cyan-400">reg acc_val (Accumulator)</div>
@@ -935,31 +935,33 @@
                             <div id="sig-acc-null" class="text-base font-bold text-amber-300 mt-1">1'b1 (∅)</div>
                         </div>
                         <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/30">
-                            <div class="text-[10px] text-emerald-400">Gated MACs / Power Saved</div>
+                            <div class="text-[10px] text-emerald-400">Skipped / total cycles</div>
                             <div id="sig-bypass-ratio" class="text-base font-bold text-emerald-400 mt-1">0 / 0 (0.0%)</div>
                         </div>
                     </div>
 
                     <!-- Synthesizable Verilog Snippet -->
                     <div class="bg-slate-950 rounded-xl p-3.5 border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto leading-relaxed">
-<pre><span class="text-slate-500">// Synthesizable Verilog RTL: hardware/rnull_mac.v — 1-Bit Causal Tagging &amp; Zero-Power ∅-Bypass</span>
-<span class="text-cyan-400">module</span> rnull_mac (
-    <span class="text-cyan-400">input  wire</span>        clk, rst_n, w_null, x_null,
-    <span class="text-cyan-400">input  wire signed</span> [15:0] w_val, x_val,
-    <span class="text-cyan-400">output reg  signed</span> [31:0] acc_val,
-    <span class="text-cyan-400">output reg</span>         acc_null
+<pre><span class="text-slate-500">// hardware/rnull_mac.v (abridged): 1-bit null tags, operand isolation, guard bits</span>
+<span class="text-cyan-400">module</span> rnull_mac #(<span class="text-cyan-400">parameter</span> WIDTH = 16, <span class="text-cyan-400">parameter</span> GUARD = 8) (
+    <span class="text-cyan-400">input  wire</span>        clk, rst_n, clear_acc, w_null, x_null,
+    <span class="text-cyan-400">input  wire signed</span> [WIDTH-1:0] w_val, x_val,
+    <span class="text-cyan-400">output reg  signed</span> [2*WIDTH+GUARD-1:0] acc_val,
+    <span class="text-cyan-400">output reg</span>         acc_null, acc_ovf
 );
-    <span class="text-cyan-400">wire</span> syn_null = w_null | x_null;                      <span class="text-slate-500">// Absorbing Synaptic Coupling (W ⊙ x)</span>
-    <span class="text-cyan-400">wire signed</span> [15:0] gated_w = syn_null ? 16'sd0 : w_val; <span class="text-slate-500">// Operand isolation prevents switching</span>
-    <span class="text-cyan-400">wire signed</span> [15:0] gated_x = syn_null ? 16'sd0 : x_val;
-    <span class="text-cyan-400">wire signed</span> [31:0] prod    = gated_w * gated_x;
+    <span class="text-cyan-400">wire</span> syn_null = w_null | x_null;                 <span class="text-slate-500">// synapse skipped if either operand is null</span>
+    <span class="text-cyan-400">wire signed</span> [WIDTH-1:0] gated_w = syn_null ? 0 : w_val; <span class="text-slate-500">// operand isolation</span>
+    <span class="text-cyan-400">wire signed</span> [WIDTH-1:0] gated_x = syn_null ? 0 : x_val;
+    <span class="text-slate-500">// prod = gated_w * gated_x, sign-extended; acc_sum = (acc_null ? 0 : acc_val) + prod</span>
 
     <span class="text-cyan-400">always</span> @(posedge clk or negedge rst_n) <span class="text-cyan-400">begin</span>
-        <span class="text-cyan-400">if</span> (!rst_n) <span class="text-cyan-400">begin</span> acc_val &lt;= 32'sd0; acc_null &lt;= 1'b1; <span class="text-cyan-400">end</span>
-        <span class="text-cyan-400">else if</span> (!syn_null) <span class="text-cyan-400">begin</span>                         <span class="text-slate-500">// Clock Gating: update only on active synapse</span>
-            acc_val  &lt;= acc_null ? prod : (acc_val + prod);
+        <span class="text-cyan-400">if</span> (!rst_n)          <span class="text-cyan-400">begin</span> acc_val &lt;= 0; acc_null &lt;= 1'b1; acc_ovf &lt;= 1'b0; <span class="text-cyan-400">end</span>
+        <span class="text-cyan-400">else if</span> (clear_acc) <span class="text-cyan-400">begin</span> acc_val &lt;= 0; acc_null &lt;= 1'b1; acc_ovf &lt;= 1'b0; <span class="text-cyan-400">end</span>
+        <span class="text-cyan-400">else if</span> (!syn_null) <span class="text-cyan-400">begin</span>                      <span class="text-slate-500">// clock enable: update on active synapse only</span>
+            acc_val  &lt;= acc_sum;
             acc_null &lt;= 1'b0;
-        <span class="text-cyan-400">end</span>                                               <span class="text-slate-500">// Else: Acc(t) = Acc(t-1) ⊕ ∅ = Acc(t-1)</span>
+            acc_ovf  &lt;= acc_ovf | add_ovf;
+        <span class="text-cyan-400">end</span>                                           <span class="text-slate-500">// else: registers hold</span>
     <span class="text-cyan-400">end</span>
 <span class="text-cyan-400">endmodule</span></pre>
                     </div>
@@ -968,19 +970,19 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- TAB 05: AUTOMATED PYTEST VERIFICATION SUITE                               -->
+        <!-- TAB 05: IN-BROWSER CONSISTENCY CHECKS                                     -->
         <!-- ========================================================================= -->
         <section id="tab-tests" class="tab-panel hidden space-y-6">
             <div class="glass-panel rounded-2xl p-5 border-l-4 border-l-cyan-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <span class="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">Tab 05 &bull; Automated Verification &amp; Reproducibility</span>
-                    <h2 class="text-lg font-bold text-white mt-0.5">Automated Test Suite (<code class="font-mono text-cyan-300">tests/test_patterns.py</code>) &bull; <span id="pytest-time-label" class="font-mono text-emerald-400 text-sm">12/12 Passed</span></h2>
+                    <span class="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">Tab 05 &bull; In-Browser Consistency Checks</span>
+                    <h2 class="text-lg font-bold text-white mt-0.5">Operator consistency checks &bull; <span id="pytest-time-label" class="font-mono text-slate-400 text-sm">not run yet</span></h2>
                     <p class="text-xs text-slate-300 mt-1">
-                        Executes all 12 mathematical, Dual-Tensor PyTorch, and hardware RTL assertions in real time inside the browser.
+                        Runs 12 checks of this page's JavaScript operator port against the definitions of the algebra. They do not execute the Python package or the RTL: use <code class="font-mono">pytest</code> and the Verilog testbenches for that.
                     </p>
                 </div>
                 <button onclick="runAllUnitTests()" class="text-xs font-mono px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition shrink-0">
-                    ▶ Run All 12 Axiom &amp; Pattern Tests
+                    ▶ Run all checks
                 </button>
             </div>
 
@@ -996,23 +998,23 @@
     <footer class="border-t border-slate-800/80 bg-slate-950/90 py-4 mt-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2">
             <div>
-                <strong>Causal Transparency Algebra (<span class="font-mono text-cyan-400">ℝ_∅</span>) &amp; <span class="font-mono text-cyan-400">∅-Net</span> Framework (v1.0.1)</strong> &bull; Author: Hakim Guettal
+                <strong>Causal Transparency Algebra (<span class="font-mono text-cyan-400">ℝ_∅</span>) &amp; <span class="font-mono text-cyan-400">∅-Net</span> Framework (v1.1.0)</strong> &bull; Author: Hakim Guettal &bull; Illustrative simulator: logic runs offline, styling loads Tailwind CSS and Google Fonts from their CDNs
             </div>
             <div class="font-mono text-[11px] flex items-center gap-3">
                 <a href="https://github.com/GuettHM/rnull-framework" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 transition">GitHub: GuettHM/rnull-framework</a>
                 <span>|</span>
-                <a href="https://doi.org/10.5281/zenodo.24175268" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 transition">CERN/Zenodo DOI: 10.5281/zenodo.24175268</a>
+                <a href="https://doi.org/10.5281/zenodo.24175268" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 transition">Zenodo DOI (v1.0.1 archive): 10.5281/zenodo.24175268</a>
             </div>
         </div>
     </footer>
 
     <!-- ========================================================================= -->
-    <!-- CORE RNULL JAVASCRIPT ENGINE (EXACT EQUIVALENT OF rnull/core.py)          -->
+    <!-- JAVASCRIPT PORT OF THE R_NULL OPERATORS (reference: rnull/tensor.py)          -->
     <!-- ========================================================================= -->
     <script>
         /**
-         * RNullScalar: Exact JavaScript Dual-Value (v, m) implementation of RNullTensor
-         * Mirrors rnull/core.py byte-for-byte.
+         * RNullScalar: JavaScript port of the scalar (v, m) operators.
+         * The Python package (rnull/) is the reference implementation.
          */
         class RNullScalar {
             constructor(v = 0.0, is_null = false) {
@@ -1227,7 +1229,7 @@
         }
 
         // =========================================================================
-        // TAB 02: MULTIMODAL SENSOR FUSION & OOD SAFETY
+        // TAB 02: PRODUCT FUSION & MISSING INPUTS
         // =========================================================================
         const stateFusion = {
             cam: { v: 2.0, mode: 'real' },
@@ -1307,14 +1309,14 @@
             const allNull = sensors.every(s => stateFusion[s].mode !== 'real');
 
             if (allNull) {
-                document.getElementById('status-classic').textContent = 'OOD BIAS HALLUCINATION';
+                document.getElementById('status-classic').textContent = 'BIAS-ONLY OUTPUT';
                 document.getElementById('status-classic').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40';
-                document.getElementById('out-classic').textContent = `Output: +${cOut.toFixed(2)} (False Bias Prediction!)`;
+                document.getElementById('out-classic').textContent = `Output: +${cOut.toFixed(2)} (bias only)`;
                 document.getElementById('out-classic').className = 'text-base font-bold text-rose-400 pt-1';
             } else if (anyNull) {
                 document.getElementById('status-classic').textContent = 'ZERO COLLAPSE';
                 document.getElementById('status-classic').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40';
-                document.getElementById('out-classic').textContent = `Output: +${cOut.toFixed(2)} (Active Sensors Zeroed!)`;
+                document.getElementById('out-classic').textContent = `Output: +${cOut.toFixed(2)} (live sensors zeroed)`;
                 document.getElementById('out-classic').className = 'text-base font-bold text-rose-400 pt-1';
             } else {
                 document.getElementById('status-classic').textContent = 'NOMINAL';
@@ -1327,8 +1329,8 @@
             const nSym = sensors.map(s => stateFusion[s].mode === 'real' ? stateFusion[s].v.toFixed(1) : 'NaN');
             document.getElementById('eq-nan').textContent = `y = (${nSym[0]} × ${nSym[1]} × ${nSym[2]}) + ${b.toFixed(2)}`;
             if (anyNull) {
-                document.getElementById('status-nan').textContent = 'GRAPH CRASH (NaN)';
-                document.getElementById('out-nan').textContent = 'Output: NaN (Destructive Propagation)';
+                document.getElementById('status-nan').textContent = 'NaN PROPAGATES';
+                document.getElementById('out-nan').textContent = 'Output: NaN';
                 document.getElementById('out-nan').className = 'text-base font-bold text-rose-400 pt-1';
             } else {
                 document.getElementById('status-nan').textContent = 'NOMINAL';
@@ -1336,23 +1338,24 @@
                 document.getElementById('out-nan').className = 'text-base font-bold text-emerald-400 pt-1';
             }
 
-            // 3. R_null Bi-Identity Fusion + RNullLinear Bias Gating
+            // 3. R_null product fusion; bias suppressed when every factor is null
             const rTensors = sensors.map(s => new RNullScalar(stateFusion[s].v, stateFusion[s].mode !== 'real'));
             const fused = rTensors[0].mul(rTensors[1]).mul(rTensors[2]);
             const rSym = rTensors.map(t => t.m ? '∅' : t.v.toFixed(1));
+            const presentCount = rTensors.filter(t => !t.m).length;
 
             if (fused.m) {
-                document.getElementById('status-rnull').textContent = 'NATIVE EPISTEMIC ABSTENTION';
+                document.getElementById('status-rnull').textContent = 'ALL INPUTS MISSING: ABSTAIN';
                 document.getElementById('status-rnull').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold';
                 document.getElementById('eq-rnull').textContent = `y = (${rSym[0]} ⊗ ${rSym[1]} ⊗ ${rSym[2]}) ↦ Bias Gated`;
-                document.getElementById('out-rnull').textContent = 'Output: Y = ∅ (Explicit OOD Refusal)';
+                document.getElementById('out-rnull').textContent = 'Output: Y = ∅ (0/3 sensors present)';
                 document.getElementById('out-rnull').className = 'text-base font-bold text-amber-300 pt-1';
             } else {
                 const finalVal = fused.v + b;
-                document.getElementById('status-rnull').textContent = anyNull ? 'TRANSPARENT BYPASS' : 'NOMINAL FUSION';
+                document.getElementById('status-rnull').textContent = anyNull ? 'NULL FACTOR SKIPPED' : 'NOMINAL FUSION';
                 document.getElementById('status-rnull').className = 'mono-badge text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
                 document.getElementById('eq-rnull').textContent = `y = (${rSym[0]} ⊗ ${rSym[1]} ⊗ ${rSym[2]}) + ${b.toFixed(2)} = ${fused.v.toFixed(2)} + ${b.toFixed(2)}`;
-                document.getElementById('out-rnull').textContent = `Output: ${finalVal.toFixed(2)} (m = False)`;
+                document.getElementById('out-rnull').textContent = `Output: ${finalVal.toFixed(2)} (m = False, ${presentCount}/3 sensors present)`;
                 document.getElementById('out-rnull').className = 'text-base font-bold text-emerald-400 pt-1';
             }
         }
@@ -1365,18 +1368,26 @@
         let clSteps = 0;
         let weightsStd = [...initialWeights];
         let weightsRnull = [...initialWeights];
+        // AdamW state left over from earlier training (first/second moment estimates).
+        const BETA1 = 0.9, BETA2 = 0.999, ADAM_EPS = 1e-8;
+        const initialM = [0.40, -0.30, 0.50, -0.20, 0.35, -0.45, 0.0, 0.0];
+        let adamM = [...initialM];
+        let adamV = initialWeights.map(() => 1.0);
 
         function stepContinualLearning(numSteps) {
             const lambda = parseFloat(document.getElementById('cl-lambda').value);
-            const momTail = parseFloat(document.getElementById('cl-mom').value);
+            const lr = parseFloat(document.getElementById('cl-lr').value);
 
             for (let s = 0; s < numSteps; s++) {
                 clSteps++;
                 for (let i = 0; i < initialWeights.length; i++) {
                     if (frozenMask[i]) {
-                        // Task-A Frozen Weight:
-                        // Standard AdamW still applies weight decay (-lambda * W) + residual momentum
-                        const driftDelta = (-lambda * weightsStd[i]) + (momTail * Math.sin(clSteps * 0.3 + i));
+                        // Frozen weight under AdamW with zero gradient: the moment estimates
+                        // decay and decoupled weight decay keeps acting (bias correction ~ 1
+                        // after warm-up, so it is omitted here).
+                        adamM[i] = BETA1 * adamM[i];
+                        adamV[i] = BETA2 * adamV[i];
+                        const driftDelta = -lr * lambda * weightsStd[i] - lr * adamM[i] / (Math.sqrt(adamV[i]) + ADAM_EPS);
                         weightsStd[i] = weightsStd[i] + driftDelta;
 
                         // R_null Continual Learning Step: ΔW = ∅ on frozen weights -> W(t+1) = W(t) ⊕ ∅ = W(t)
@@ -1398,6 +1409,8 @@
             clSteps = 0;
             weightsStd = [...initialWeights];
             weightsRnull = [...initialWeights];
+            adamM = [...initialM];
+            adamV = initialWeights.map(() => 1.0);
             renderContinualLearning();
         }
 
@@ -1420,7 +1433,7 @@
             const mseRnull = sumSqRnull / frozenCount;
 
             document.getElementById('cl-mse-std').textContent = mseStd.toFixed(10);
-            document.getElementById('cl-mse-rnull').textContent = `${mseRnull.toFixed(10)} (ZERO DRIFT)`;
+            document.getElementById('cl-mse-rnull').textContent = `${mseRnull.toFixed(10)}${mseRnull === 0 ? ' (unchanged)' : ''}`;
 
             const container = document.getElementById('cl-weights-grid');
             container.innerHTML = initialWeights.map((w0, idx) => {
@@ -1455,7 +1468,7 @@
         }
 
         // =========================================================================
-        // TAB 04: VERILOG RTL NEUROMORPHIC MAC SIMULATOR
+        // TAB 04: TAGGED MAC CELL (BEHAVIOURAL MODEL)
         // =========================================================================
         const stateRtl = {
             wVal: 2.5,
@@ -1505,14 +1518,14 @@
             document.getElementById('sig-syn-null').className = synNull ? 'text-base font-bold text-amber-400 mt-1' : 'text-base font-bold text-cyan-300 mt-1';
 
             document.getElementById('sig-gated-wx').textContent = `${gatedW.toFixed(2)} / ${gatedX.toFixed(2)}`;
-            document.getElementById('sig-prod').textContent = synNull ? 'GATED (0.0 mW)' : prod.toFixed(2);
+            document.getElementById('sig-prod').textContent = synNull ? 'ISOLATED (operands = 0)' : prod.toFixed(2);
 
             const gateBadge = document.getElementById('rtl-gate-status');
             if (synNull) {
-                gateBadge.textContent = '⚡ ZERO-POWER ∅-BYPASS ACTIVE (syn_null = 1)';
+                gateBadge.textContent = '∅-BYPASS ACTIVE (syn_null = 1)';
                 gateBadge.className = 'mono-badge text-xs px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
             } else {
-                gateBadge.textContent = '🔥 ACTIVE MAC COMPUTATION (syn_null = 0)';
+                gateBadge.textContent = 'ACTIVE MAC CYCLE (syn_null = 0)';
                 gateBadge.className = 'mono-badge text-xs px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold';
             }
 
@@ -1539,7 +1552,8 @@
         function runRtlBenchmark() {
             const sparsity = parseFloat(document.getElementById('rtl-sparsity').value) / 100.0;
             for (let i = 0; i < 1000; i++) {
-                const isNullCycle = Math.random() < sparsity;
+                // weight and input are null independently; the synapse is skipped if either is
+                const isNullCycle = (Math.random() < sparsity) || (Math.random() < sparsity);
                 stateRtl.totalCycles++;
                 if (isNullCycle) {
                     stateRtl.bypassedCycles++;
@@ -1563,7 +1577,7 @@
         }
 
         // =========================================================================
-        // TAB 05: AUTOMATED PYTEST VERIFICATION SUITE (12 FORMAL ASSERTIONS)
+        // TAB 05: IN-BROWSER CONSISTENCY CHECKS
         // =========================================================================
         function runAllUnitTests() {
             const tStart = performance.now();
@@ -1635,25 +1649,25 @@
                 },
                 {
                     name: 'test_directed_synaptic_skip_wire',
-                    desc: 'Verifies Monograph Section 3 Box 1: Native Skip-Connection (∅ ▷ x == x when W=∅ and x ∈ ℝ)',
+                    desc: 'Verifies the directed coupling: ∅ ▷ x == x when W=∅ and x ∈ ℝ',
                     run: () => {
                         const wNull = new RNullScalar(0.0, true);
                         const xReal = new RNullScalar(6.5, false);
                         const res = wNull.synapticSkip(xReal);
                         return res.v === 6.5 && res.m === false;
                     },
-                    detail: 'W=∅ ▷ x=6.5 ⟹ (6.5, False) [Zero-FLOP Passive Skip Wire]'
+                    detail: 'W=∅ ▷ x=6.5 ⟹ (6.5, False) [input passed through; the weight acts as 1]'
                 },
                 {
                     name: 'test_directed_synaptic_abstention',
-                    desc: 'Verifies Monograph Section 3 Box 2: Native Epistemic Abstention (W ▷ ∅ == ∅ when x=∅)',
+                    desc: 'Verifies the directed coupling: W ▷ ∅ == ∅ when x=∅',
                     run: () => {
                         const wReal = new RNullScalar(4.0, false);
                         const xNull = new RNullScalar(0.0, true);
                         const res = wReal.synapticSkip(xNull);
                         return res.m === true;
                     },
-                    detail: 'W=4.0 ▷ x=∅ ⟹ ∅ (m=True) [Synaptic Abstention]'
+                    detail: 'W=4.0 ▷ x=∅ ⟹ ∅ (m=True) [null input gives null]'
                 },
                 {
                     name: 'test_multimodal_lidar_dropout_resilience',
@@ -1668,8 +1682,8 @@
                     detail: '2.0 ⊗ ∅ ⊗ 4.0 == 8.0 (m=False)'
                 },
                 {
-                    name: 'test_ood_total_sensor_blackout_abstention',
-                    desc: 'Verifies that total sensor blackout (X = ∅) deterministically outputs Y = ∅ and suppresses static bias',
+                    name: 'test_all_null_product_is_null',
+                    desc: 'Verifies that a product whose factors are all null is null',
                     run: () => {
                         const s1 = new RNullScalar(2.0, true);
                         const s2 = new RNullScalar(3.0, true);
@@ -1677,7 +1691,7 @@
                         const fused = s1.mul(s2).mul(s3);
                         return fused.m === true;
                     },
-                    detail: '∅ ⊗ ∅ ⊗ ∅ == ∅ (m=True, Static Bias Suppressed)'
+                    detail: '∅ ⊗ ∅ ⊗ ∅ == ∅ (m=True)'
                 },
                 {
                     name: 'test_continual_learning_zero_drift_mse',
@@ -1692,8 +1706,8 @@
                     detail: 'W(t) ⊕ ∅ == W(t) ⟹ MSE == 0.0000000000'
                 },
                 {
-                    name: 'test_hardware_rtl_mac_absorbing_bypass',
-                    desc: 'Verifies absorbing MAC coupling W ⊙ ∅ == ∅ triggers syn_null = 1 and preserves accumulator Acc(t)',
+                    name: 'test_mac_model_absorbing_bypass',
+                    desc: 'Verifies the absorbing coupling W ⊙ ∅ == ∅ and that the accumulator is unchanged: Acc ⊕ ∅ == Acc',
                     run: () => {
                         const acc = new RNullScalar(12.0, false);
                         const w = new RNullScalar(3.0, false);
@@ -1702,7 +1716,7 @@
                         const accNext = acc.add(syn);
                         return syn.m === true && accNext.v === 12.0 && !accNext.m;
                     },
-                    detail: 'Acc_t = 12.0 ⊕ (3.0 ⊙ ∅) = 12.0 ⊕ ∅ == 12.0 (Clock Gated)'
+                    detail: 'Acc_t = 12.0 ⊕ (3.0 ⊙ ∅) = 12.0 ⊕ ∅ == 12.0 (held)'
                 }
             ];
 
@@ -1732,10 +1746,16 @@
             const elapsedMs = (performance.now() - tStart).toFixed(2);
             document.getElementById('pytest-time-label').textContent = `${passedCount}/${tests.length} Passed in ${elapsedMs} ms`;
 
+            const allOk = passedCount === tests.length;
+            document.getElementById('pytest-time-label').className =
+                'font-mono text-sm ' + (allOk ? 'text-emerald-400' : 'text-rose-400');
             const globalBadge = document.getElementById('global-test-badge');
+            globalBadge.className = 'mono-badge text-xs px-3 py-1.5 rounded-lg flex items-center gap-2 border ' +
+                (allOk ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                       : 'bg-rose-500/10 border-rose-500/40 text-rose-300');
             globalBadge.innerHTML = `
-                <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-active"></span>
-                <span>ALL ${passedCount} AXIOM CHECKS PASSING (${elapsedMs} ms)</span>
+                <span class="w-2 h-2 rounded-full ${allOk ? 'bg-emerald-400' : 'bg-rose-400'}"></span>
+                <span>${passedCount}/${tests.length} CONSISTENCY CHECKS ${allOk ? 'PASSED' : '— FAILURES'} (${elapsedMs} ms)</span>
             `;
         }
 
