@@ -1,5 +1,5 @@
-# The DOI below identifies the archived release v1.0.1. When a newer release
-# is archived on Zenodo, update `version`, `date-released` and `doi` together.
+# When a newer release is archived on Zenodo, update `version`,
+# `date-released` and `doi` together.
 cff-version: 1.2.0
 title: "Causal Transparency Algebra (ℝ_∅) & ∅-Net Framework"
 message: "If you use this software, please cite it using the metadata below."
@@ -8,10 +8,10 @@ authors:
   - family-names: "Guettal"
     given-names: "Hakim"
 repository-code: "https://github.com/GuettHM/rnull-framework"
-url: "https://doi.org/10.5281/zenodo.24175268"
-doi: 10.5281/zenodo.24175268
-version: 1.0.1
-date-released: "2026-11-13"
+url: "https://doi.org/10.5281/zenodo.24215450"
+doi: 10.5281/zenodo.24215450
+version: 1.1.0
+date-released: "2026-11-14"
 license: MIT
 keywords:
   - missing-data

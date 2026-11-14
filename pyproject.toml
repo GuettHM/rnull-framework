@@ -48,7 +48,7 @@ dev = [
 Homepage = "https://github.com/GuettHM/rnull-framework"
 Repository = "https://github.com/GuettHM/rnull-framework"
 Changelog = "https://github.com/GuettHM/rnull-framework/blob/main/CHANGELOG.md"
-DOI = "https://doi.org/10.5281/zenodo.24175268"
+DOI = "https://doi.org/10.5281/zenodo.24215450"
 
 [tool.setuptools]
 packages = ["rnull"]

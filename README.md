@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/GuettHM/rnull-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/GuettHM/rnull-framework/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![DOI (v1.0.1)](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.24175268-blue.svg)](https://doi.org/10.5281/zenodo.24175268)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.24215450-blue.svg)](https://doi.org/10.5281/zenodo.24215450)
 
 Arithmetic on real numbers extended with one element, **∅ ("no value was
 supplied")**, that is distinct from a measured `0.0` and is the identity of both
@@ -315,7 +315,7 @@ not support. See [`CHANGELOG.md`](./CHANGELOG.md) for the full list.
 
 ## Citation
 
-The archived release is v1.0.1:
+Release v1.1.0 is archived on Zenodo (v1.0.1: `10.5281/zenodo.24175268`):
 
 ```bibtex
 @software{guettal_2026_rnull,
@@ -323,9 +323,9 @@ The archived release is v1.0.1:
   title     = {Causal Transparency Algebra (R\_null) and Null-Net Framework},
   year      = {2026},
   publisher = {Zenodo},
-  version   = {v1.0.1},
-  doi       = {10.5281/zenodo.24175268},
-  url       = {https://doi.org/10.5281/zenodo.24175268}
+  version   = {v1.1.0},
+  doi       = {10.5281/zenodo.24215450},
+  url       = {https://doi.org/10.5281/zenodo.24215450}
 }
 ```
 

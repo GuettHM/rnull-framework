@@ -2,6 +2,8 @@
 
 ## 1.1.0 — 2026-11-14
 
+Archived release (DOI 10.5281/zenodo.24215450).
+
 This release makes the project installable and testable, unifies its two
 implementations, fixes bugs, and replaces unsupported claims with measured
 results. It contains breaking API changes (listed below).
